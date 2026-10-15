@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUMARIS</title>
+
+  <!-- Importando la fuente divertida 'Fredoka' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Hoja de estilos -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ================= LOGIN / REGISTRO ================= -->
+  <div id="pantalla-auth">
+
+    <!-- Lado izquierdo: Bienvenida animada -->
+    <section class="lado-izquierdo">
+      <div class="nube nube-1"></div>
+      <div class="nube nube-2"></div>
+      <div class="nube nube-3"></div>
+      <div class="nube nube-4"></div>
+
+      <h1>Bienvenido a<br><span>SUMARIS</span></h1>
+      <p>¡Aprende y diviértete con nosotros!</p>
+    </section>
+
+    <!-- Lado derecho: Formularios -->
+    <section class="lado-derecho">
+
+      <!-- ========== FORMULARIO LOGIN ========== -->
+      <form class="tarjeta activa" id="form-login">
+        <h2>INICIAR SESION</h2>
+        <p class="subtitulo">¡Qué bueno verte de nuevo!</p>
+
+        <div class="error-msg" id="error-login">¡Ups! Correo o contraseña incorrectos</div>
+
+        <div class="campo">
+          <label for="correo-login">Correo electrónico</label>
+          <input type="text" id="correo-login" placeholder="tu@correo-genial.com" required>
+        </div>
+
+        <div class="campo">
+          <label for="contrasena-login">Contraseña</label>
+          <input type="password" id="contrasena-login" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn btn-primario">Entrar</button>
+        <button type="button" class="btn btn-secundario" id="ir-registro">Crear una cuenta nueva</button>
+      </form>
+
+      <!-- ========== FORMULARIO REGISTRO ========== -->
+      <form class="tarjeta" id="form-registro">
+        <h2>CREAR CUENTA</h2>
+
+        <div class="campo">
+          <label for="correo-registro">Correo electrónico</label>
+          <input type="email" id="correo-registro" placeholder="tu@correo-genial.com" required>
+        </div>
+
+        <div class="campo">
+          <label for="contrasena-registro">Contraseña</label>
+          <input type="password" id="contrasena-registro" placeholder="Mínimo 8 caracteres" required minlength="8">
+        </div>
+
+        <div class="campo">
+          <label for="confirmar-contrasena">Repite tu contraseña</label>
+          <input type="password" id="confirmar-contrasena" placeholder="Escríbela de nuevo" required>
+        </div>
+
+        <div class="terminos">
+          <input type="checkbox" id="aceptar" required>
+          <label for="aceptar">Aceptar <a href="#">Terminos y condiciones</a></label>
+        </div>
+
+        <button type="submit" class="btn btn-registrar">CREAR CUENTA</button>
+
+        <p class="texto-ayuda">¿Ya eres parte del equipo? <a id="ir-login">Inicia sesión aquí</a></p>
+      </form>
+
+    </section>
+  </div>
+
+  <!-- ================= INTERFAZ PRINCIPAL ================= -->
+  <div class="interfaz-principal" id="interfaz-principal">
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+      <div class="logo-sumaris">
+        SUMARIS
+      </div>
+      <div class="info-usuario">
+        <div class="avatar-usuario">👤</div>
+        <span class="nombre-usuario" id="nombre-mostrado">Admin</span>
+        <button class="btn-salir" id="btn-salir">Salir</button>
+      </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="contenido-principal">
+      <div class="saludo">
+        <h2 id="saludo-titulo">¡Hola de nuevo, Admin!</h2>
+        <p>¿Qué quieres aprender hoy? Elige un tema y comienza a jugar</p>
+      </div>
+
+      <div class="grid-temas">
+
+        <div class="tarjeta-tema tema-suma" data-tema="Sumas">
+          <div class="icono-tema">➕</div>
+          <h3>Sumas</h3>
+          <p class="descripcion">Aprende a sumar con juegos divertidos</p>
+          <span class="etiqueta">Nivel 1</span>
+        </div>
+
+        <div class="tarjeta-tema tema-resta" data-tema="Restas">
+          <div class="icono-tema">➖</div>
+          <h3>Restas</h3>
+          <p class="descripcion">Quita y descubre el resultado correcto</p>
+          <span class="etiqueta">Nivel 1</span>
+        </div>
+
+        <div class="tarjeta-tema tema-multi" data-tema="Multiplicaciones">
+          <div class="icono-tema">✖️</div>
+          <h3>Multiplicaciones</h3>
+          <p class="descripcion">Las tablas de multiplicar más divertidas</p>
+          <span class="etiqueta">Nivel 2</span>
+        </div>
+
+        <div class="tarjeta-tema tema-division" data-tema="Divisiones">
+          <div class="icono-tema">➗</div>
+          <h3>Divisiones</h3>
+          <p class="descripcion">Reparte en partes iguales y aprende</p>
+          <span class="etiqueta">Nivel 2</span>
+        </div>
+
+        <div class="tarjeta-tema tema-numeros" data-tema="Los Números">
+          <div class="icono-tema">🔢</div>
+          <h3>Los Números</h3>
+          <p class="descripcion">Cuenta, ordena y conoce los números</p>
+          <span class="etiqueta">Nivel 1</span>
+        </div>
+
+        <div class="tarjeta-tema tema-figuras" data-tema="Figuras Geométricas">
+          <div class="icono-tema">🔺</div>
+          <h3>Figuras Geométricas</h3>
+          <p class="descripcion">Descubre círculos, triángulos y más</p>
+          <span class="etiqueta">Nivel 1</span>
+        </div>
+
+        <div class="tarjeta-tema tema-fracciones" data-tema="Fracciones">
+          <div class="icono-tema">🍕</div>
+          <h3>Fracciones</h3>
+          <p class="descripcion">Aprende con pizza y chocolate</p>
+          <span class="etiqueta">Nivel 3</span>
+        </div>
+
+        <div class="tarjeta-tema tema-problemas" data-tema="Problemas">
+          <div class="icono-tema">🧩</div>
+          <h3>Problemas</h3>
+          <p class="descripcion">Resuelve retos con lógica y matemáticas</p>
+          <span class="etiqueta">Nivel 3</span>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+
+</body>
+</html>
