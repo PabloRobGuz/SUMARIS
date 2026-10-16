@@ -9,6 +9,8 @@ const errorLogin = document.getElementById('error-login');
 const nombreMostrado = document.getElementById('nombre-mostrado');
 const saludoTitulo = document.getElementById('saludo-titulo');
 
+const API_URL = 'http://localhost:3000/api';
+
 // ========== Cambiar entre login y registro ==========
 btnIrRegistro.addEventListener('click', () => {
   formLogin.classList.remove('activa');
@@ -24,87 +26,108 @@ btnIrLogin.addEventListener('click', () => {
   document.title = 'SUMARIS - Iniciar sesión';
 });
 
-// ========== Login con admin / 1234 ==========
-formLogin.addEventListener('submit', (e) => {
+// ========== Login con Base de Datos ==========
+formLogin.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const correo = document.getElementById('correo-login').value.trim();
   const contrasena = document.getElementById('contrasena-login').value;
 
-  if (correo === 'admin' && contrasena === '1234') {
-    // Acceso correcto
-    errorLogin.classList.remove('visible');
-    entrarAlSistema('Admin');
-  } else {
-    // Mostrar error
-    errorLogin.classList.add('visible');
+  try {
+    const respuesta = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ correo, contrasena })
+    });
 
-    // Reiniciar la animación de sacudida
-    errorLogin.style.animation = 'none';
-    void errorLogin.offsetWidth;
-    errorLogin.style.animation = '';
+    const resultado = await respuesta.json();
 
-    // Sacudir la tarjeta
-    formLogin.style.animation = 'none';
-    void formLogin.offsetWidth;
-    formLogin.style.animation = 'sacudir 0.5s ease';
-    setTimeout(() => { formLogin.style.animation = ''; }, 600);
+    if (respuesta.ok) {
+      errorLogin.classList.remove('visible');
+      entrarAlSistema(resultado.nombre_usuario);
+    } else {
+      errorLogin.textContent = resultado.mensaje || '¡Ups! Correo o contraseña incorrectos';
+      activarErrorLogin();
+    }
+  } catch (error) {
+    console.error('Error de conexión:', error);
+    errorLogin.textContent = 'No se pudo conectar con el servidor';
+    activarErrorLogin();
   }
 });
 
-// ========== Registro (por ahora solo simula) ==========
-formRegistro.addEventListener('submit', (e) => {
+function activarErrorLogin() {
+  errorLogin.classList.add('visible');
+  errorLogin.style.animation = 'none';
+  void errorLogin.offsetWidth;
+  errorLogin.style.animation = '';
+
+  formLogin.style.animation = 'none';
+  void formLogin.offsetWidth;
+  formLogin.style.animation = 'sacudir 0.5s ease';
+  setTimeout(() => { formLogin.style.animation = ''; }, 600);
+}
+
+// ========== Registro con Base de Datos ==========
+formRegistro.addEventListener('submit', async (e) => {
   e.preventDefault();
   const correo = document.getElementById('correo-registro').value.trim();
+  const edad = document.getElementById('edad-registro').value;
   const pass = document.getElementById('contrasena-registro').value;
   const confirmar = document.getElementById('confirmar-contrasena').value;
 
   if (pass !== confirmar) {
-    alert('¡Ups! Las contraseñas no son iguales\nIntenta de nuevo.');
+    alert('¡Ups! Las contraseñas no coinciden\nIntenta de nuevo.');
     return;
   }
 
-  alert('¡Cuenta creada con éxito!');
+  const nombre_usuario = correo.split('@')[0];
 
-  // Volver al login
-  formRegistro.classList.remove('activa');
-  formLogin.classList.add('activa');
-  document.body.classList.remove('modo-registro');
+  try {
+    const respuesta = await fetch(`${API_URL}/registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre_usuario, correo, contrasena: pass, edad })
+    });
+
+    const resultado = await respuesta.json();
+
+    if (respuesta.ok) {
+      alert('¡Cuenta creada con éxito! Ya puedes iniciar sesión.');
+      formRegistro.reset();
+      formRegistro.classList.remove('activa');
+      formLogin.classList.add('activa');
+      document.body.classList.remove('modo-registro');
+    } else {
+      alert(resultado.mensaje || 'No se pudo crear la cuenta.');
+    }
+  } catch (error) {
+    console.error('Error al registrar:', error);
+    alert('Error al conectar con el servidor backend.');
+  }
 });
 
 // ========== Función para entrar al sistema ==========
 function entrarAlSistema(nombre) {
-  // Ocultar la pantalla de login
   pantallaAuth.style.display = 'none';
-
-  // Mostrar interfaz principal con fade
   interfazPrincipal.classList.add('visible');
   interfazPrincipal.style.opacity = '0';
   requestAnimationFrame(() => {
     interfazPrincipal.style.opacity = '1';
   });
 
-  // Personalizar el nombre
   nombreMostrado.textContent = nombre;
   saludoTitulo.textContent = `¡Hola de nuevo, ${nombre}!`;
-
-  // Cambiar título de la pestaña
   document.title = 'SUMARIS - Inicio';
 }
 
 // ========== Cerrar sesión ==========
 document.getElementById('btn-salir').addEventListener('click', () => {
-  // Ocultar interfaz principal
   interfazPrincipal.classList.remove('visible');
-
-  // Mostrar login de nuevo
   pantallaAuth.style.display = 'flex';
-
-  // Resetear formularios
   formLogin.reset();
   document.getElementById('correo-login').focus();
   errorLogin.classList.remove('visible');
-
   document.title = 'SUMARIS';
 });
 
@@ -116,5 +139,4 @@ document.querySelectorAll('.tarjeta-tema').forEach((tarjeta) => {
   });
 });
 
-// ========== Enfocar el campo de correo al cargar ==========
 document.getElementById('correo-login').focus();

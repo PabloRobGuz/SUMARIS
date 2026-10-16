@@ -18,7 +18,7 @@
   <!-- ================= LOGIN / REGISTRO ================= -->
   <div id="pantalla-auth">
 
-    <!-- Lado izquierdo: Bienvenida animada -->
+    <!-- Lado izquierdo: Bienvenida -->
     <section class="lado-izquierdo">
       <div class="nube nube-1"></div>
       <div class="nube nube-2"></div>
@@ -41,7 +41,7 @@
 
         <div class="campo">
           <label for="correo-login">Correo electrónico</label>
-          <input type="text" id="correo-login" placeholder="tu@correo-genial.com" required>
+          <input type="email" id="correo-login" placeholder="tu@correo-genial.com" required>
         </div>
 
         <div class="campo">
@@ -60,6 +60,11 @@
         <div class="campo">
           <label for="correo-registro">Correo electrónico</label>
           <input type="email" id="correo-registro" placeholder="tu@correo-genial.com" required>
+        </div>
+
+        <div class="campo">
+          <label for="edad-registro">Edad</label>
+          <input type="number" id="edad-registro" placeholder="Ej. 10" min="5" max="17" required>
         </div>
 
         <div class="campo">
@@ -95,7 +100,7 @@
       </div>
       <div class="info-usuario">
         <div class="avatar-usuario">👤</div>
-        <span class="nombre-usuario" id="nombre-mostrado">Admin</span>
+        <span class="nombre-usuario" id="nombre-mostrado">Alumno</span>
         <button class="btn-salir" id="btn-salir">Salir</button>
       </div>
     </header>
@@ -103,12 +108,11 @@
     <!-- Contenido -->
     <main class="contenido-principal">
       <div class="saludo">
-        <h2 id="saludo-titulo">¡Hola de nuevo, Admin!</h2>
+        <h2 id="saludo-titulo">¡Hola de nuevo!</h2>
         <p>¿Qué quieres aprender hoy? Elige un tema y comienza a jugar</p>
       </div>
 
       <div class="grid-temas">
-
         <div class="tarjeta-tema tema-suma" data-tema="Sumas">
           <div class="icono-tema">➕</div>
           <h3>Sumas</h3>
@@ -164,7 +168,6 @@
           <p class="descripcion">Resuelve retos con lógica y matemáticas</p>
           <span class="etiqueta">Nivel 3</span>
         </div>
-
       </div>
     </main>
   </div>
