@@ -172,6 +172,65 @@
     </main>
   </div>
 
+       <!-- ================= PANTALLA DEL TEST ================= -->
+  <div id="pantalla-test">
+    
+    <!-- PANTALLA DE INICIO -->
+    <div class="test-pantalla activa" id="test-inicio">
+      <div class="contenedor-botones-inicio">
+        
+        <button class="tarjeta-inicio" id="btn-empezar-cero">
+          <img src="img/empezar.png" alt="Empezar de cero" class="imagen-boton">
+          <span>Empezar de cero</span>
+        </button>
+
+        <button class="tarjeta-inicio" id="btn-conocer-nivel">
+          <img src="img/nivel.png" alt="Conoce tu nivel" class="imagen-boton">
+          <span>Conoce tu nivel</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE PREGUNTAS -->
+    <div class="test-pantalla" id="test-preguntas">
+      <div class="progreso-test">
+        <span id="texto-progreso">Pregunta 1</span>
+      </div>
+      
+      <div class="tarjeta-test tarjeta-pregunta">
+        <h2 id="pregunta-texto">Resuelve este problema</h2>
+        
+        <div class="contenido-pregunta">
+          <div class="caja-imagen" id="pregunta-emoji">🟠</div>
+          
+          <div class="opciones-test" id="pregunta-opciones">
+            <button class="opcion">a) Opción 1</button>
+            <button class="opcion">b) Opción 2</button>
+            <button class="opcion">c) Opción 3</button>
+            <button class="opcion">d) Opción 4</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-test">
+        <button class="btn-siguiente" id="btn-siguiente" disabled>▶</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE FINALIZACIÓN -->
+    <div class="test-pantalla" id="test-final">
+      <div class="tarjeta-test">
+        <h2>¡Excelente trabajo! 🌟</h2>
+        <p>Ya sabemos cuál es tu nivel. ¡Vamos a empezar a jugar!</p>
+        <button class="btn-azul" id="btn-ir-temas">Ir a los temas</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Script -->
+  <script src="script.js"></script>
+
   <!-- Script -->
   <script src="script.js"></script>
 

@@ -11,7 +11,7 @@ app.use(cors());
 const dbConfig = {
     host: 'localhost',
     user: 'root',          
-    password: 'PassL0Lj3j3@',
+    password: 'Venado2026#',
     database: 'sumaris'
 };
 
@@ -106,12 +106,39 @@ app.post('/api/login', async (req, res) => {
             mensaje: '¡Bienvenido!',
             id_usuario: usuario.id_usuario,
             nombre_usuario: usuario.nombre_usuario,
-            nivel_actual: usuario.nivel_actual
+            nivel_actual: usuario.nivel_actual,
+            test_completado: usuario.test_completado
         });
 
     } catch (error) {
         console.error('Error en el login:', error);
         res.status(500).json({ mensaje: 'Error interno del servidor.' });
+    }
+});
+
+// ==========================================
+// RUTA PARA GUARDAR EL RESULTADO DEL TEST
+// ==========================================
+app.post('/api/completar-test', async (req, res) => {
+    const { id_usuario, puntos } = req.body;
+    
+    // Calcular nivel
+    let nivel = 'Principiante';
+    if (puntos >= 3 && puntos <= 4) nivel = 'Intermedio';
+    if (puntos >= 5) nivel = 'Avanzado';
+
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        await connection.execute(
+            'UPDATE usuario SET nivel_actual = ?, test_completado = TRUE WHERE id_usuario = ?',
+            [nivel, id_usuario]
+        );
+        await connection.end();
+        
+        res.json({ mensaje: 'Test guardado', nivel });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al guardar test' });
     }
 });
 
