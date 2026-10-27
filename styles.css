@@ -685,7 +685,6 @@ body.modo-registro {
   box-shadow: 0 4px 0 #3a86ff; /* Efecto de hundirse */
 }
 
-/* Nuevo estilo para las imágenes de los botones */
 .imagen-boton {
   width: 240px;
   height: 240px;
@@ -875,3 +874,517 @@ body.modo-registro {
     justify-content: center;
   }
 }
+
+/* ================================================== */
+/* ========== ESTILOS NUEVOS PARA MODALES Y CURSOS === */
+/* ================================================== */
+
+.btn-config {
+  background: #ffdd00;
+  color: #222;
+  border: 3px solid #e6c700;
+  box-shadow: 0 4px 0 #e6c700;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.btn-config:hover { filter: brightness(1.05); }
+.btn-config:active { transform: translateY(4px); box-shadow: 0 0px 0 #e6c700; }
+
+/* Pantallas Modales (Configuración y Lecciones) */
+.pantalla-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.pantalla-modal.visible {
+  display: flex;
+}
+
+.contenido-modal {
+  background: #ffffff;
+  border: 4px solid #3a86ff;
+  border-radius: 30px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 12px 0 rgba(58, 134, 255, 0.3);
+  position: relative;
+  text-align: center;
+}
+
+.btn-cerrar-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #ff006e;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c90056;
+}
+.btn-cerrar-modal:active { transform: translateY(4px); box-shadow: 0 0 0 #c90056; }
+
+/* Estilos Configuración */
+.tarjeta-config h2 {
+  color: #ff006e;
+  margin-bottom: 1.5rem;
+}
+.config-grupo {
+  margin: 1.2rem 0;
+  text-align: left;
+  font-weight: 600;
+  color: #3a86ff;
+  font-size: 1.1rem;
+}
+.config-grupo select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 15px;
+  border: 3px solid #c8d6e5;
+  font-family: inherit;
+  font-size: 1rem;
+  margin-top: 0.4rem;
+  outline: none;
+}
+
+/* Estilos Lista de Lecciones */
+.lista-lecciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.tarjeta-leccion {
+  background: #f7f9fc;
+  border: 3px solid #c8d6e5;
+  border-radius: 20px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.tarjeta-leccion:hover {
+  border-color: #3a86ff;
+  background: #e0f4ff;
+  transform: translateX(4px);
+}
+
+.tarjeta-leccion h4 {
+  color: #222;
+  font-size: 1.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.tarjeta-leccion p {
+  color: #8395a7;
+  font-size: 0.85rem;
+}
+
+.badge-leccion {
+  background: #ff006e;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ================================================== */
+/* ================= MODO OSCURO ==================== */
+/* ================================================== */
+body.tema-oscuro {
+  background: #1a1a2e !important;
+  color: #ffffff;
+}
+
+body.tema-oscuro .interfaz-principal {
+  background: #1a1a2e;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(58, 134, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(255, 0, 110, 0.05) 0%, transparent 40%);
+}
+
+body.tema-oscuro .contenido-modal,
+body.tema-oscuro .tarjeta-leccion {
+  background: #16213e;
+  color: #ffffff;
+  border-color: #0f3460;
+}
+
+/* Las tarjetas de curso conservan su borde y color de identidad */
+body.tema-oscuro .tarjeta-tema { background: #16213e; }
+
+body.tema-oscuro .tarjeta-tema h3 {
+  color: #ffffff;
+}
+
+body.tema-oscuro .tarjeta-leccion:hover {
+  background: #0f3460;
+  border-color: #3a86ff;
+}
+/* ================================================== */
+/* ========== LISTA DE LECCIONES (REFINADA) ========= */
+/* ================================================== */
+.tarjeta-leccion {
+  width: 100%;
+  font-family: inherit;
+  gap: 1rem;
+}
+.tarjeta-leccion .num-leccion {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #3a86ff;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 #023e8a;
+}
+.tarjeta-leccion .info-leccion { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.tarjeta-leccion .tl-titulo { color: #222; font-size: 1.1rem; font-weight: 700; }
+.tarjeta-leccion .tl-desc { color: #576574; font-size: 0.85rem; font-weight: 500; }
+.tarjeta-leccion.completada .num-leccion { background: #00d084; box-shadow: 0 4px 0 #00a066; }
+.tarjeta-leccion.completada .badge-leccion { background: #00d084; }
+.tarjeta-leccion.bloqueada { opacity: 0.65; cursor: not-allowed; }
+.tarjeta-leccion.bloqueada .num-leccion { background: #c8d6e5; box-shadow: 0 4px 0 #a4b0be; }
+.tarjeta-leccion.bloqueada .badge-leccion { background: #a4b0be; }
+.tarjeta-leccion.bloqueada:hover { transform: none; background: #f7f9fc; border-color: #c8d6e5; }
+
+/* ================================================== */
+/* ========== LECCIÓN EN PANTALLA COMPLETA ========== */
+/* ================================================== */
+.pantalla-leccion {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: none;
+  flex-direction: column;
+  background: #fff5d1;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(58, 134, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(255, 0, 110, 0.10) 0%, transparent 40%);
+}
+.pantalla-leccion.visible { display: flex; animation: entrarLeccion 0.35s ease-out; }
+@keyframes entrarLeccion { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+.leccion-barra {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 2rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.leccion-cerrar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #ff006e;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c90056;
+}
+.leccion-cerrar:active { transform: translateY(4px); box-shadow: none; }
+
+.leccion-progreso {
+  flex: 1;
+  height: 20px;
+  background: #ffffff;
+  border: 3px solid #3a86ff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.leccion-progreso-relleno {
+  height: 100%;
+  width: 0;
+  background: #00d084;
+  border-radius: 20px;
+  transition: width 0.4s ease;
+}
+.leccion-vidas { flex: 0 0 auto; font-size: 1.4rem; display: flex; gap: 0.2rem; }
+.leccion-vidas .perdida { filter: grayscale(1); opacity: 0.35; }
+
+.leccion-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 1.5rem 2rem;
+}
+.paso {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+}
+.paso h2 {
+  color: #ff006e;
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+.visual-leccion {
+  background: #e0f4ff;
+  border: 3px solid #3a86ff;
+  border-radius: 20px;
+  padding: 1.5rem 1rem;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  word-break: break-word;
+}
+.texto-teoria {
+  font-size: 1.3rem;
+  line-height: 1.55;
+  font-weight: 500;
+  color: #333;
+  max-width: 56ch;
+  margin: 0 auto;
+}
+.paso-final .emoji-final, .paso-final .estrellas { font-size: 5rem; line-height: 1.2; margin-bottom: 0.5rem; }
+.paso-final .estrellas { animation: reboteLogo 1.6s ease-in-out infinite; }
+
+.opciones-leccion { display: flex; flex-direction: column; gap: 0.9rem; max-width: 420px; margin: 0 auto; }
+.opcion-leccion {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: left;
+  font-size: 1.3rem;
+  box-shadow: 0 5px 0 #c8d6e5;
+}
+.opcion-leccion .atajo {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+.opcion-leccion:disabled { cursor: default; }
+.opcion-leccion.correcta { background: #d7f8ea; border-color: #00a066; color: #00613d; box-shadow: 0 5px 0 #00a066; }
+.opcion-leccion.incorrecta { background: #ffe0e0; border-color: #d32f2f; color: #a31515; box-shadow: 0 5px 0 #d32f2f; animation: sacudir 0.4s ease; }
+
+/* Pie con botón y retroalimentación (estilo Duolingo) */
+.leccion-pie {
+  border-top: 4px solid #3a86ff;
+  background: #ffffff;
+  padding: 1.2rem 2rem 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 110px;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.leccion-pie.ok { background: #d7f8ea; border-color: #00d084; }
+.leccion-pie.mal { background: #ffe0e0; border-color: #ff5252; }
+.pie-mensaje { display: flex; flex-direction: column; gap: 0.2rem; font-size: 1.1rem; font-weight: 600; flex: 1; }
+.pie-mensaje strong { font-size: 1.5rem; }
+.leccion-pie.ok .pie-mensaje { color: #00613d; }
+.leccion-pie.mal .pie-mensaje { color: #a31515; }
+
+.btn-leccion {
+  min-width: 220px;
+  padding: 1rem 1.5rem;
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  background: #00d084;
+  border: 3px solid #00a066;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #00a066;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.btn-leccion:hover:not(:disabled) { filter: brightness(1.08); }
+.btn-leccion:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 #00a066; }
+.btn-leccion:disabled { background: #e0e0e0; border-color: #bdbdbd; box-shadow: 0 6px 0 #bdbdbd; color: #757575; cursor: not-allowed; }
+.leccion-pie.mal .btn-leccion { background: #ff006e; border-color: #c90056; box-shadow: 0 6px 0 #c90056; }
+.leccion-pie.mal .btn-leccion:active { box-shadow: 0 0 0 #c90056; }
+
+body.leccion-abierta { overflow: hidden; }
+
+@media (max-width: 640px) {
+  .leccion-barra { padding: 0.9rem 1rem; gap: 0.8rem; }
+  .leccion-pie { flex-direction: column; align-items: stretch; padding: 1rem 1rem 1.3rem; text-align: center; }
+  .btn-leccion { width: 100%; }
+  .texto-teoria { font-size: 1.15rem; }
+}
+
+/* ================================================== */
+/* ========== AVISO (TOAST) Y ACCESIBILIDAD ========= */
+/* ================================================== */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translate(-50%, 30px);
+  z-index: 2000;
+  background: #222;
+  color: #fff;
+  padding: 0.9rem 1.5rem;
+  border-radius: 20px;
+  border: 3px solid #ffdd00;
+  font-weight: 600;
+  max-width: calc(100% - 2rem);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+#toast.visible { opacity: 1; transform: translate(-50%, 0); }
+
+:focus-visible { outline: 4px solid #ffdd00; outline-offset: 3px; }
+.tarjeta-tema:focus-visible { outline-color: #ff006e; }
+
+.config-grupo select { background: #f7f9fc; color: #222; }
+.tarjeta-config .config-grupo label { cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ================================================== */
+/* ========== MODO OSCURO: COBERTURA COMPLETA ======= */
+/* ================================================== */
+body.tema-oscuro.modo-registro { background: #16213e !important; }
+
+/* Superficies */
+body.tema-oscuro .tarjeta,
+body.tema-oscuro .tarjeta-test,
+body.tema-oscuro .tarjeta-inicio,
+body.tema-oscuro .leccion-pie,
+body.tema-oscuro .leccion-progreso { background: #16213e; }
+body.tema-oscuro #pantalla-test,
+body.tema-oscuro .pantalla-leccion {
+  background-color: #1a1a2e;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(58, 134, 255, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(255, 0, 110, 0.05) 0%, transparent 40%);
+}
+body.tema-oscuro .caja-imagen,
+body.tema-oscuro .visual-leccion { background: #0f3460; }
+
+/* Textos */
+body.tema-oscuro .saludo p,
+body.tema-oscuro .tarjeta .subtitulo,
+body.tema-oscuro .texto-ayuda,
+body.tema-oscuro .terminos,
+body.tema-oscuro .tarjeta-tema .descripcion,
+body.tema-oscuro .tarjeta-leccion .tl-desc,
+body.tema-oscuro .tarjeta-leccion p { color: #c8d6e5; }
+body.tema-oscuro .tarjeta-leccion .tl-titulo,
+body.tema-oscuro .texto-teoria,
+body.tema-oscuro .tarjeta-inicio span,
+body.tema-oscuro .tarjeta-test p,
+body.tema-oscuro .contenido-modal p { color: #ffffff; }
+body.tema-oscuro .saludo h2 { text-shadow: none; }
+body.tema-oscuro .campo label,
+body.tema-oscuro .config-grupo,
+body.tema-oscuro .terminos a { color: #7db4ff; }
+body.tema-oscuro .texto-ayuda a:hover { color: #ffdd00; }
+
+/* Campos y opciones */
+body.tema-oscuro .campo input,
+body.tema-oscuro .config-grupo select,
+body.tema-oscuro .opcion {
+  background: #1f2b4d;
+  color: #ffffff;
+  border-color: #34507f;
+}
+body.tema-oscuro .campo input::placeholder { color: #8fa3c0; }
+body.tema-oscuro .campo input:focus { background: #243357; border-color: #ffdd00; }
+body.tema-oscuro .opcion:hover { background: #0f3460; border-color: #3a86ff; }
+body.tema-oscuro .opcion.seleccionada { background: #3a86ff; color: #fff; border-color: #023e8a; }
+body.tema-oscuro .opcion-leccion { box-shadow: 0 5px 0 #0f3460; }
+body.tema-oscuro .opcion-leccion.correcta { background: #0b3d2e; color: #7dffc8; border-color: #00d084; box-shadow: 0 5px 0 #00a066; }
+body.tema-oscuro .opcion-leccion.incorrecta { background: #4a1f2a; color: #ffb3b3; border-color: #ff5252; box-shadow: 0 5px 0 #d32f2f; }
+
+/* Mensajes y botones */
+body.tema-oscuro .error-msg { background: #4a1f2a; color: #ffb3b3; }
+body.tema-oscuro .btn-secundario { background: #16213e; color: #7db4ff; border-color: #3a86ff; }
+body.tema-oscuro .btn-secundario:hover { background: #1f2b4d; }
+body.tema-oscuro .leccion-pie.ok { background: #0b3d2e; }
+body.tema-oscuro .leccion-pie.ok .pie-mensaje { color: #7dffc8; }
+body.tema-oscuro .leccion-pie.mal { background: #4a1f2a; }
+body.tema-oscuro .leccion-pie.mal .pie-mensaje { color: #ffb3b3; }
+body.tema-oscuro .btn-leccion:disabled { background: #2a3556; border-color: #34507f; box-shadow: 0 6px 0 #34507f; color: #8fa3c0; }
+
+/* Lecciones */
+body.tema-oscuro .tarjeta-leccion.bloqueada:hover { background: #16213e; border-color: #0f3460; }
+body.tema-oscuro .tarjeta-leccion.bloqueada .num-leccion { background: #34507f; box-shadow: 0 4px 0 #1f2b4d; }
+
+/* ================================================== */
+/* ========== MODO DE ALTO CONTRASTE ================ */
+/* ================================================== */
+body.alto-contraste .saludo p,
+body.alto-contraste .tarjeta .subtitulo,
+body.alto-contraste .texto-ayuda,
+body.alto-contraste .terminos,
+body.alto-contraste .tarjeta-tema .descripcion,
+body.alto-contraste .tarjeta-leccion .tl-desc,
+body.alto-contraste .campo label,
+body.alto-contraste .config-grupo { color: #000; }
+body.alto-contraste .tarjeta-tema h3,
+body.alto-contraste .tarjeta-leccion .tl-titulo,
+body.alto-contraste .texto-teoria { color: #000; }
+body.alto-contraste .campo input,
+body.alto-contraste .opcion,
+body.alto-contraste .tarjeta-leccion { border-color: #000; }
+body.alto-contraste .campo input::placeholder { color: #444; }
+body.alto-contraste .tarjeta-tema .etiqueta,
+body.alto-contraste .badge-leccion { background: #000; }
+body.alto-contraste.tema-oscuro .saludo p,
+body.alto-contraste.tema-oscuro .tarjeta .subtitulo,
+body.alto-contraste.tema-oscuro .texto-ayuda,
+body.alto-contraste.tema-oscuro .terminos,
+body.alto-contraste.tema-oscuro .tarjeta-tema .descripcion,
+body.alto-contraste.tema-oscuro .tarjeta-leccion .tl-desc,
+body.alto-contraste.tema-oscuro .campo label,
+body.alto-contraste.tema-oscuro .config-grupo,
+body.alto-contraste.tema-oscuro .tarjeta-tema h3,
+body.alto-contraste.tema-oscuro .tarjeta-leccion .tl-titulo,
+body.alto-contraste.tema-oscuro .texto-teoria { color: #fff; }
+body.alto-contraste.tema-oscuro .campo input,
+body.alto-contraste.tema-oscuro .opcion,
+body.alto-contraste.tema-oscuro .tarjeta-leccion { border-color: #fff; }
+body.alto-contraste.tema-oscuro .tarjeta-tema .etiqueta,
+body.alto-contraste.tema-oscuro .badge-leccion { background: #000; border: 2px solid #fff; }

@@ -17,8 +17,6 @@
 
   <!-- ================= LOGIN / REGISTRO ================= -->
   <div id="pantalla-auth">
-
-    <!-- Lado izquierdo: Bienvenida -->
     <section class="lado-izquierdo">
       <div class="nube nube-1"></div>
       <div class="nube nube-2"></div>
@@ -29,10 +27,8 @@
       <p>¡Aprende y diviértete con nosotros!</p>
     </section>
 
-    <!-- Lado derecho: Formularios -->
     <section class="lado-derecho">
-
-      <!-- ========== FORMULARIO LOGIN ========== -->
+      <!-- FORMULARIO LOGIN -->
       <form class="tarjeta activa" id="form-login">
         <h2>INICIAR SESION</h2>
         <p class="subtitulo">¡Qué bueno verte de nuevo!</p>
@@ -41,19 +37,19 @@
 
         <div class="campo">
           <label for="correo-login">Correo electrónico</label>
-          <input type="email" id="correo-login" placeholder="tu@correo-genial.com" required>
+          <input type="email" id="correo-login" autocomplete="email" placeholder="tu@correo-genial.com" required>
         </div>
 
         <div class="campo">
           <label for="contrasena-login">Contraseña</label>
-          <input type="password" id="contrasena-login" placeholder="••••••••" required>
+          <input type="password" id="contrasena-login" autocomplete="current-password" placeholder="••••••••" required>
         </div>
 
         <button type="submit" class="btn btn-primario">Entrar</button>
         <button type="button" class="btn btn-secundario" id="ir-registro">Crear una cuenta nueva</button>
       </form>
 
-      <!-- ========== FORMULARIO REGISTRO ========== -->
+      <!-- FORMULARIO REGISTRO -->
       <form class="tarjeta" id="form-registro">
         <h2>CREAR CUENTA</h2>
 
@@ -69,12 +65,12 @@
 
         <div class="campo">
           <label for="contrasena-registro">Contraseña</label>
-          <input type="password" id="contrasena-registro" placeholder="Mínimo 8 caracteres" required minlength="8">
+          <input type="password" id="contrasena-registro" autocomplete="new-password" placeholder="Mínimo 8 caracteres" required minlength="8">
         </div>
 
         <div class="campo">
           <label for="confirmar-contrasena">Repite tu contraseña</label>
-          <input type="password" id="confirmar-contrasena" placeholder="Escríbela de nuevo" required>
+          <input type="password" id="confirmar-contrasena" autocomplete="new-password" placeholder="Escríbela de nuevo" required>
         </div>
 
         <div class="terminos">
@@ -86,138 +82,148 @@
 
         <p class="texto-ayuda">¿Ya eres parte del equipo? <a id="ir-login">Inicia sesión aquí</a></p>
       </form>
-
     </section>
   </div>
 
   <!-- ================= INTERFAZ PRINCIPAL ================= -->
   <div class="interfaz-principal" id="interfaz-principal">
-
-    <!-- Barra superior -->
     <header class="barra-superior">
-      <div class="logo-sumaris">
-        SUMARIS
-      </div>
+      <div class="logo-sumaris">SUMARIS</div>
       <div class="info-usuario">
         <div class="avatar-usuario">👤</div>
         <span class="nombre-usuario" id="nombre-mostrado">Alumno</span>
+        <button class="btn-config" id="btn-config">⚙️</button>
         <button class="btn-salir" id="btn-salir">Salir</button>
       </div>
     </header>
 
-    <!-- Contenido -->
     <main class="contenido-principal">
       <div class="saludo">
         <h2 id="saludo-titulo">¡Hola de nuevo!</h2>
-        <p>¿Qué quieres aprender hoy? Elige un tema y comienza a jugar</p>
+        <p>¿Qué quieres aprender hoy? Elige un curso y comienza a jugar</p>
       </div>
 
       <div class="grid-temas">
-        <div class="tarjeta-tema tema-suma" data-tema="Sumas">
+        <!-- CURSO 1: SUMAS -->
+        <div class="tarjeta-tema tema-suma" data-curso="sumas">
           <div class="icono-tema">➕</div>
           <h3>Sumas</h3>
           <p class="descripcion">Aprende a sumar con juegos divertidos</p>
           <span class="etiqueta">Nivel 1</span>
         </div>
 
-        <div class="tarjeta-tema tema-resta" data-tema="Restas">
+        <!-- CURSO 2: RESTAS -->
+        <div class="tarjeta-tema tema-resta" data-curso="restas">
           <div class="icono-tema">➖</div>
           <h3>Restas</h3>
           <p class="descripcion">Quita y descubre el resultado correcto</p>
           <span class="etiqueta">Nivel 1</span>
         </div>
 
-        <div class="tarjeta-tema tema-multi" data-tema="Multiplicaciones">
+        <!-- CURSO 3: MULTIPLICACIONES -->
+        <div class="tarjeta-tema tema-multi" data-curso="multiplicaciones">
           <div class="icono-tema">✖️</div>
           <h3>Multiplicaciones</h3>
           <p class="descripcion">Las tablas de multiplicar más divertidas</p>
           <span class="etiqueta">Nivel 2</span>
         </div>
 
+        <!-- Próximamente (sin lecciones todavía) -->
         <div class="tarjeta-tema tema-division" data-tema="Divisiones">
           <div class="icono-tema">➗</div>
           <h3>Divisiones</h3>
           <p class="descripcion">Reparte en partes iguales y aprende</p>
           <span class="etiqueta">Nivel 2</span>
         </div>
-
         <div class="tarjeta-tema tema-numeros" data-tema="Los Números">
           <div class="icono-tema">🔢</div>
           <h3>Los Números</h3>
           <p class="descripcion">Cuenta, ordena y conoce los números</p>
           <span class="etiqueta">Nivel 1</span>
         </div>
-
         <div class="tarjeta-tema tema-figuras" data-tema="Figuras Geométricas">
           <div class="icono-tema">🔺</div>
           <h3>Figuras Geométricas</h3>
           <p class="descripcion">Descubre círculos, triángulos y más</p>
           <span class="etiqueta">Nivel 1</span>
         </div>
-
-        <div class="tarjeta-tema tema-fracciones" data-tema="Fracciones">
-          <div class="icono-tema">🍕</div>
-          <h3>Fracciones</h3>
-          <p class="descripcion">Aprende con pizza y chocolate</p>
-          <span class="etiqueta">Nivel 3</span>
-        </div>
-
-        <div class="tarjeta-tema tema-problemas" data-tema="Problemas">
-          <div class="icono-tema">🧩</div>
-          <h3>Problemas</h3>
-          <p class="descripcion">Resuelve retos con lógica y matemáticas</p>
-          <span class="etiqueta">Nivel 3</span>
-        </div>
       </div>
     </main>
   </div>
 
-       <!-- ================= PANTALLA DEL TEST ================= -->
+  <!-- ================= PANTALLA DE LECCIONES POR CURSO ================= -->
+  <div id="pantalla-lecciones" class="pantalla-modal" role="dialog" aria-modal="true" aria-labelledby="titulo-curso-modal">
+    <div class="contenido-modal">
+      <button class="btn-cerrar-modal" id="cerrar-lecciones" aria-label="Cerrar">✖</button>
+      <h2 id="titulo-curso-modal">Curso</h2>
+      <p id="desc-curso-modal">Selecciona una lección para comenzar</p>
+      
+      <div class="lista-lecciones" id="contenedor-lista-lecciones">
+        <!-- Las 3 lecciones se inyectan dinámicamente o se muestran aquí -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PANTALLA DE CONFIGURACIÓN ================= -->
+  <div id="pantalla-configuracion" class="pantalla-modal" role="dialog" aria-modal="true">
+    <div class="contenido-modal tarjeta-config">
+      <button class="btn-cerrar-modal" id="cerrar-config" aria-label="Cerrar">✖</button>
+      <h2>⚙️</h2>
+      
+      <div class="config-grupo">
+        <label for="select-tema">Tema visual:</label>
+        <select id="select-tema">
+          <option value="claro">🌞</option>
+          <option value="oscuro">🌙</option>
+        </select>
+      </div>
+
+      <div class="config-grupo">
+        <label>
+          <input type="checkbox" id="check-audio" checked> Activar efectos de sonido
+        </label>
+      </div>
+
+      <div class="config-grupo">
+        <label>
+          <input type="checkbox" id="check-accesibilidad"> Modo de alto contraste
+        </label>
+      </div>
+
+      <button class="btn btn-primario" id="guardar-config">Guardar Cambios</button>
+    </div>
+  </div>
+
+  <!-- ================= PANTALLA DEL TEST ================= -->
   <div id="pantalla-test">
-    
-    <!-- PANTALLA DE INICIO -->
     <div class="test-pantalla activa" id="test-inicio">
       <div class="contenedor-botones-inicio">
-        
         <button class="tarjeta-inicio" id="btn-empezar-cero">
           <img src="img/empezar.png" alt="Empezar de cero" class="imagen-boton">
           <span>Empezar de cero</span>
         </button>
 
         <button class="tarjeta-inicio" id="btn-conocer-nivel">
-          <img src="img/nivel.png" alt="Conoce tu nivel" class="imagen-boton">
+          <img src="img/nivel.png" alt="Empezar de cero" class="imagen-boton">
           <span>Conoce tu nivel</span>
         </button>
       </div>
     </div>
 
-    <!-- PANTALLA DE PREGUNTAS -->
     <div class="test-pantalla" id="test-preguntas">
-      <div class="progreso-test">
-        <span id="texto-progreso">Pregunta 1</span>
-      </div>
-      
+      <div class="progreso-test"><span id="texto-progreso">Pregunta 1</span></div>
       <div class="tarjeta-test tarjeta-pregunta">
         <h2 id="pregunta-texto">Resuelve este problema</h2>
-        
         <div class="contenido-pregunta">
           <div class="caja-imagen" id="pregunta-emoji">🟠</div>
-          
-          <div class="opciones-test" id="pregunta-opciones">
-            <button class="opcion">a) Opción 1</button>
-            <button class="opcion">b) Opción 2</button>
-            <button class="opcion">c) Opción 3</button>
-            <button class="opcion">d) Opción 4</button>
-          </div>
+          <div class="opciones-test" id="pregunta-opciones"></div>
         </div>
       </div>
-      
       <div class="footer-test">
-        <button class="btn-siguiente" id="btn-siguiente" disabled>▶</button>
+        <button class="btn-siguiente" id="btn-siguiente" aria-label="Siguiente pregunta" disabled>▶</button>
       </div>
     </div>
 
-    <!-- PANTALLA DE FINALIZACIÓN -->
     <div class="test-pantalla" id="test-final">
       <div class="tarjeta-test">
         <h2>¡Excelente trabajo! 🌟</h2>
@@ -225,14 +231,25 @@
         <button class="btn-azul" id="btn-ir-temas">Ir a los temas</button>
       </div>
     </div>
-
   </div>
 
-  <!-- Script -->
-  <script src="script.js"></script>
+  <!-- ================= LECCIÓN (VENTANA APARTE, PANTALLA COMPLETA) ================= -->
+  <div id="pantalla-leccion" class="pantalla-leccion" role="dialog" aria-modal="true" aria-label="Lección">
+    <header class="leccion-barra">
+      <button type="button" class="leccion-cerrar" id="leccion-cerrar" aria-label="Salir de la lección">✖</button>
+      <div class="leccion-progreso" role="progressbar" aria-label="Progreso de la lección" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="leccion-progreso-relleno" id="leccion-progreso-relleno"></div>
+      </div>
+      <div class="leccion-vidas" id="leccion-vidas" role="img" aria-label="3 vidas"></div>
+    </header>
+    <main class="leccion-cuerpo" id="leccion-cuerpo"></main>
+    <footer class="leccion-pie" id="leccion-pie" aria-live="polite">
+      <div class="pie-mensaje" id="leccion-mensaje"></div>
+      <button type="button" class="btn-leccion" id="leccion-accion">Continuar</button>
+    </footer>
+  </div>
 
-  <!-- Script -->
+  <!-- Script principal -->
   <script src="script.js"></script>
-
 </body>
 </html>
