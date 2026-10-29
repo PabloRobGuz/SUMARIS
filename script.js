@@ -339,7 +339,20 @@ guardarConfig.addEventListener('click', () => {
   guardar.escribir('sumaris-ajustes', ajustes);
   aplicarAjustes();
   pantallaConfig.classList.remove('visible');
-  mostrarToast('¡Configuración guardada! ✅');
+  mostrarToast('¡Configuración guardada!');
+});
+
+// NUEVO: Previsualizar el alto contraste al instante mientras se ajusta
+checkContraste.addEventListener('change', () => {
+  document.body.classList.toggle('alto-contraste', checkContraste.checked);
+});
+
+guardarConfig.addEventListener('click', () => {
+  ajustes = { tema: selectTema.value, audio: checkAudio.checked, contraste: checkContraste.checked };
+  guardar.escribir('sumaris-ajustes', ajustes);
+  aplicarAjustes();
+  pantallaConfig.classList.remove('visible');
+  mostrarToast('¡Configuración guardada!');
 });
 
 // Si se cierra sin guardar, se restaura el tema guardado
@@ -362,15 +375,42 @@ const ejerciciosExtra = {
 
 // Imagen de apoyo para la teoría y las preguntas de cada lección
 const visuales = {
-  'sumas-1': '🍎🍎 ➕ 🍎🍎🍎 = 🍎🍎🍎🍎🍎',
-  'sumas-2': '⭐⭐⭐⭐ ➕ ⭐⭐⭐⭐',
-  'sumas-3': '🔟 ➕ 5️⃣ = ❓',
-  'restas-1': '🎈🎈🎈🎈🎈 ➖ 🎈🎈',
-  'restas-2': '🖍️🖍️🖍️🖍️🖍️🖍️🖍️🖍️ ➖ 3',
-  'restas-3': '2️⃣0️⃣ ➖ 7️⃣ = ❓',
-  'multiplicaciones-1': '🟦🟦 🟦🟦 🟦🟦',
-  'multiplicaciones-2': '2️⃣ ✖️ 3️⃣ = 2 + 2 + 2',
-  'multiplicaciones-3': '5️⃣ ✖️ 4️⃣ = ❓'
+  'sumas-1': [
+    '🍎🍎 &nbsp;+&nbsp; 🍎🍎🍎<br><small>Juntamos los dos grupos</small>',
+    '⭐ &nbsp;+&nbsp; ⭐⭐⭐⭐⭐<br><small>Contemos todas las estrellas</small>'
+  ],
+  'sumas-2': [
+    '🍬🍬🍬🍬 &nbsp;+&nbsp; 🍬🍬🍬🍬<br><small>Añadimos más caramelos</small>',
+    '🎨🎨🎨 &nbsp;+&nbsp; 🎨🎨<br><small>Juntamos los colores</small>'
+  ],
+  'sumas-3': [
+    '🔟 &nbsp;+&nbsp; 5️⃣<br><small>Suma de decenas y unidades</small>',
+    '2️⃣0️⃣ &nbsp;+&nbsp; 1️⃣0️⃣<br><small>Agrupando cantidades mayores</small>'
+  ],
+  'restas-1': [
+    '🎈🎈🎈🎈🎈<br>💥 &nbsp; Se revientan 2 &nbsp; 💥<br><small>¿Cuántos quedan sanos?</small>',
+    '🐟🐟🐟🐟<br>🌊 &nbsp; Se escapan 2 &nbsp; 🌊<br><small>Descubre la diferencia</small>'
+  ],
+  'restas-2': [
+    '🖍️🖍️🖍️🖍️🖍️🖍️🖍️<br>🎁 &nbsp; Regalas 3 &nbsp; 🎁<br><small>¿Cuántos conservas?</small>',
+    '🍪🍪🍪🍪🍪🍪<br>👦 &nbsp; Te comes 2 &nbsp; 👦<br><small>Menos cantidad</small>'
+  ],
+  'restas-3': [
+    '2️⃣0️⃣ &nbsp;➖&nbsp; 7️⃣<br><small>Sustracción avanzada</small>',
+    '1️⃣5️⃣ &nbsp;➖&nbsp; 5️⃣<br><small>Quitando una parte</small>'
+  ],
+  'multiplicaciones-1': [
+    '🟦🟦 &nbsp; 🟦🟦 &nbsp; 🟦🟦<br><small>3 grupos de 2 bloques</small>',
+    '🟢🟢🟢 &nbsp; 🟢🟢🟢<br><small>2 grupos de 3 círculos</small>'
+  ],
+  'multiplicaciones-2': [
+    '2️⃣ &nbsp;✖️&nbsp; 3️⃣<br><small>Suma repetida: 2 + 2 + 2</small>',
+    '2️⃣ &nbsp;✖️&nbsp; 5️⃣<br><small>El doble de 5</small>'
+  ],
+  'multiplicaciones-3': [
+    '5️⃣ &nbsp;✖️&nbsp; 4️⃣<br><small>Super multiplicador</small>',
+    '3️⃣ &nbsp;✖️&nbsp; 4️⃣<br><small>Calculando filas y columnas</small>'
+  ]
 };
 
 // ========== Abrir cursos y lista de lecciones ==========
@@ -430,7 +470,7 @@ function renderizarListaLecciones() {
 
 cerrarLecciones.addEventListener('click', () => pantallaLecciones.classList.remove('visible'));
 
-// ========== Lección en ventana aparte (pantalla completa) ==========
+// ============= Lección en ventana aparte  ================
 const pantallaLeccion = document.getElementById('pantalla-leccion');
 const leccionCuerpo = document.getElementById('leccion-cuerpo');
 const leccionPie = document.getElementById('leccion-pie');
@@ -460,6 +500,91 @@ function abrirLeccion(clave, indice) {
   pintarPaso();
 }
 
+//Función inteligente para decidir que gráfico mostrar
+function obtenerVisualParaPregunta(q, claveCurso) {
+  if (q.visual) {
+    return `<div class="visual-leccion" aria-hidden="true" style="font-size: 2rem; line-height: 1.6; text-align: center; padding: 1rem;">${q.visual}</div>`;
+  }
+
+  const texto = q.q.toLowerCase();
+  const numeros = texto.match(/\d+/g);
+  
+  if (!numeros || numeros.length === 0) return '';
+
+  const n1 = parseInt(numeros[0]);
+  const n2 = numeros[1] ? parseInt(numeros[1]) : null;
+
+  // --- NUEVO: Diccionario inteligente de palabras clave a emojis ---
+  const mapaEmojis = {
+    'estrella': '⭐', 'estrellas': '⭐',
+    'caramelo': '🍬', 'caramelos': '🍬', 'dulce': '🍬', 'dulces': '🍬',
+    'galleta': '🍪', 'galletas': '🍪',
+    'juguete': '🧸', 'juguetes': '🧸',
+    'globo': '🎈', 'globos': '🎈',
+    'color': '🖍️', 'colores': '🖍️', 'lápiz': '✏️', 'lápices': '✏️',
+    'pez': '🐟', 'peces': '🐟',
+    'manzana': '🍎', 'manzanas': '🍎'
+  };
+
+  // Buscamos si el texto contiene alguna de nuestras palabras clave
+  let emoji = null;
+  for (const [palabra, e] of Object.entries(mapaEmojis)) {
+    if (texto.includes(palabra)) {
+      emoji = e;
+      break; // Encontramos el objeto específico, detenemos la búsqueda
+    }
+  }
+
+  // Si no encontró ninguna palabra específica, usamos un emoji por defecto según el curso
+  if (!emoji) {
+    if (claveCurso.includes('restas')) emoji = '🎈';
+    else if (claveCurso.includes('multiplicaciones')) emoji = '🟦';
+    else emoji = '🍎';
+  }
+
+  // --- CASO SUMAS ---
+  if (claveCurso.includes('sumas') || texto.includes('más') || texto.includes('+') || texto.includes('juntas') || texto.includes('ganas')) {
+    if (n2 !== null) {
+      const cant1 = Math.min(n1, 15);
+      const cant2 = Math.min(n2, 15);
+      return `<div class="visual-leccion" aria-hidden="true" style="font-size: 1.6rem; text-align: center; padding: 0.8rem;">
+                ${emoji.repeat(cant1)} &nbsp;+&nbsp; ${emoji.repeat(cant2)}
+                <br><small style="font-size: 0.9rem; color: var(--texto-secundario);">Juntamos ${n1} y ${n2}</small>
+              </div>`;
+    }
+  }
+
+  // --- CASO RESTAS ---
+  if (claveCurso.includes('restas') || texto.includes('quedan') || texto.includes('-') || texto.includes('rompen') || texto.includes('comes') || texto.themes || texto.includes('regalas')) {
+    if (n2 !== null) {
+      const cant1 = Math.min(n1, 15);
+      const cant2 = Math.min(n2, 15);
+      return `<div class="visual-leccion" aria-hidden="true" style="font-size: 1.6rem; text-align: center; padding: 0.8rem;">
+                ${emoji.repeat(cant1)}
+                <br><small style="font-size: 0.9rem; color: var(--texto-secundario);">De ${n1}, quitamos ${n2}</small>
+              </div>`;
+    }
+  }
+
+  // --- CASO MULTIPLICACIONES ---
+  if (claveCurso.includes('multiplicaciones') || texto.includes('x') || texto.includes('veces') || texto.includes('doble')) {
+    if (texto.includes('doble de') && n1) {
+      return `<div class="visual-leccion" aria-hidden="true" style="font-size: 1.6rem; text-align: center; padding: 0.8rem;">
+                ${emoji.repeat(Math.min(n1, 10))} &nbsp;y&nbsp; ${emoji.repeat(Math.min(n1, 10))}
+                <br><small style="font-size: 0.9rem; color: var(--texto-secundario);">Dos veces el número ${n1}</small>
+              </div>`;
+    }
+    if (n1 && n2) {
+      return `<div class="visual-leccion" aria-hidden="true" style="font-size: 1.6rem; text-align: center; padding: 0.8rem;">
+                ${(emoji.repeat(Math.min(n2, 8)) + '<br>').repeat(Math.min(n1, 5))}
+                <small style="font-size: 0.9rem; color: var(--texto-secundario);">${n1} grupos de ${n2}</small>
+              </div>`;
+    }
+  }
+
+  return '';
+}
+
 function pintarVidas() {
   leccionVidas.innerHTML = Array.from({ length: VIDAS_MAX }, (_, i) =>
     `<span class="${i < sesion.vidas ? '' : 'perdida'}">❤️</span>`).join('');
@@ -484,13 +609,11 @@ function pintarPaso() {
   const s = sesion;
   pintarVidas();
   pintarBarra();
-  const visual = s.visual ? `<div class="visual-leccion" aria-hidden="true">${s.visual}</div>` : '';
 
   if (s.fase === 'teoria') {
     leccionCuerpo.innerHTML = `
       <div class="paso paso-teoria">
         <h2>${s.lec.titulo}</h2>
-        ${visual}
         <p class="texto-teoria">${s.lec.teoria}</p>
       </div>`;
     configurarPie('', '', '¡Entendido!');
@@ -501,12 +624,17 @@ function pintarPaso() {
   s.opciones = mezclar(q.o);
   s.seleccion = null;
   s.comprobado = false;
+
+  // Declaramos visualHTML una sola vez usando nuestro enfoque híbrido
+  const visualHTML = obtenerVisualParaPregunta(q, s.clave);
+
   leccionCuerpo.innerHTML = `
     <div class="paso">
       <h2>${q.q}</h2>
-      ${s.resueltas === 0 && s.cola.length === s.total ? visual : ''}
+      ${visualHTML}
       <div class="opciones-leccion" role="group" aria-label="Respuestas"></div>
     </div>`;
+
   const contenedor = leccionCuerpo.querySelector('.opciones-leccion');
   s.opciones.forEach((op, i) => {
     const btn = document.createElement('button');
@@ -529,13 +657,40 @@ function seleccionarOpcion(i) {
   leccionAccion.disabled = false;
 }
 
-function comprobarRespuesta() {
+async function comprobarRespuesta() {
   const s = sesion;
   const q = s.cola[0];
   const botones = leccionCuerpo.querySelectorAll('.opcion-leccion');
   const acierto = s.opciones[s.seleccion].ok;
   s.ultimoAcierto = acierto;
   s.comprobado = true;
+
+  // 1. Enviar el intento al Backend para que el motor analice el rendimiento
+  let instruccionBackend = "avanzar";
+  try {
+    const respuesta = await fetch(`${API_URL}/registrar-intento`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id_usuario: idUsuarioActual || 1, // Usa el ID del usuario logueado o un valor por defecto si es invitado
+        id_nodo: s.lec.id,             // ID de la lección actual
+        es_correcto: acierto,
+        tiempo_respuesta: 5            // Puedes calcular el tiempo real o mandar un estimado
+      })
+    });
+    const resultado = await respuesta.json();
+    if (respuesta.ok) {
+      instruccionBackend = resultado.accion_sugerida;
+      // Si el backend detecta acumulación de errores, podemos notificarlo visualmente o activar ayudas
+      if (resultado.requiere_apoyo) {
+        console.log("El motor adaptativo sugirió activar una ruta de rescate o pista.");
+      }
+    }
+  } catch (error) {
+    console.error('Error al conectar con el backend para registrar el intento:', error);
+  }
+
+  // 2. Comportamiento visual en la interfaz según el resultado
   botones.forEach((b, j) => {
     b.disabled = true;
     if (s.opciones[j].ok) b.classList.add('correcta');
@@ -551,8 +706,16 @@ function comprobarRespuesta() {
     s.vidas--;
     q.fallada = true;
     const buena = s.opciones.find(o => o.ok).t;
-    configurarPie('mal', `<strong>¡Casi!</strong><span>La respuesta correcta es: ${buena}</span>`, 'Continuar');
+    
+    // Si el backend indicó que requiere apoyo por múltiples errores, mostramos una pista extra en el mensaje
+    let mensajeError = `<strong>¡Casi!</strong><span>La respuesta correcta es: ${buena}</span>`;
+    if (instruccionBackend === "activar_pista_o_rescate") {
+      mensajeError += `<br><small style="color: #ff006e; font-weight: bold;">💡 Pista del sistema: ¡Lee con atención la teoría de arriba antes de reintentar!</small>`;
+    }
+
+    configurarPie('mal', mensajeError, 'Continuar');
   }
+  
   pintarVidas();
   pintarBarra();
 }
