@@ -121,24 +121,109 @@ app.post('/api/login', async (req, res) => {
 // ==========================================
 app.post('/api/completar-test', async (req, res) => {
     const { id_usuario, puntos } = req.body;
-    
-    // Calcular nivel
-    let nivel = 'Principiante';
-    if (puntos >= 3 && puntos <= 4) nivel = 'Intermedio';
-    if (puntos >= 5) nivel = 'Avanzado';
+
+    if (id_usuario === undefined || puntos === undefined) {
+        return res.status(400).json({ mensaje: 'Faltan datos obligatorios para el coldstart.' });
+    }
 
     try {
         const connection = await mysql.createConnection(dbConfig);
+
+        // 1. Lógica del Motor Adaptativo para definir nivel y estereotipo según el puntaje (0 a 6 aciertos)
+        let nivel = 'Principiante';
+        let estereotipo = 'Explorador Novato';
+
+        if (puntos === 0) {
+            nivel = 'Principiante';
+            estereotipo = 'Aprendiz Frágil';
+        } else if (puntos >= 1 && puntos <= 2) {
+            nivel = 'Principiante';
+            estereotipo = 'Explorador Novato';
+        } else if (puntos >= 3 && puntos <= 4) {
+            nivel = 'Intermedio';
+            estereotipo = 'Autodidacta Constante';
+        } else if (puntos >= 5) {
+            nivel = 'Avanzado';
+            estereotipo = 'Autodidacta Eficiente';
+        }
+
+        // 2. Actualizar el perfil del usuario con los resultados del coldstart
         await connection.execute(
-            'UPDATE usuario SET nivel_actual = ?, test_completado = TRUE WHERE id_usuario = ?',
-            [nivel, id_usuario]
+            `UPDATE usuario 
+             SET nivel_actual = ?, estereotipo = ?, test_completado = TRUE 
+             WHERE id_usuario = ?`,
+            [nivel, estereotipo, id_usuario]
         );
+
         await connection.end();
-        
-        res.json({ mensaje: 'Test guardado', nivel });
+
+        res.json({ 
+            mensaje: 'Coldstart procesado con éxito', 
+            nivel_asignado: nivel, 
+            estereotipo_asignado: estereotipo 
+        });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ mensaje: 'Error al guardar test' });
+        console.error('Error al procesar el coldstart:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor al procesar el test de diagnóstico.' });
+    }
+});
+
+// ==============================================
+// RUTA PARA REGISTRAR INTENTO Y ANALIZAR APOYO
+// ==============================================
+app.post('/api/registrar-intento', async (req, res) =>{
+    const { id_usuario, id_nodo, es_correcto, tiempo_respuesta } =req.body;
+
+    if (id_usuario === undefined || id_nodo === undefined || es_correcto === undefined) {
+        return res.status(400).json({mensaje: 'Faltan datos obligatorios para regisrar intento.'});
+    }
+
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        //1. Guardar el intento en la tabla de historial (intento_ejercicio)
+        await connection.execute(
+            'INSERT INTO intento_ejercicio (id_usuario, id_nodo, es_correcto, tiempo_respuesta, fecha_intento) VALUES (?, ?, ?, ?, NOW())',
+            [id_usuario, id_nodo, es_correcto, tiempo_respuesta || 0]
+        );
+
+        // 2. Analizar el rendimiento reciente del usuario para decidir si necesita apoyo
+        const [rows] = await connection.execute(
+            `SELECT es_correcto FROM intento_ejercicio 
+            WHERE id_usuario = ? AND id_nodo = ? 
+            ORDER BY fecha_intento DESC LIMIT 3`,
+            [id_usuario, id_nodo]
+        );
+
+        // Nos aseguramos de que sea un arreglo válido de filas (evita cualquier tipo de error)
+        const ultimosIntentos = Array.isArray(rows) ? rows : [];
+
+        let requiereApoyo = false;
+        let accionSugerida = "avanzar";
+
+        if (!es_correcto) {
+            // Contar cuántos errores consecutivos lleva
+            const erroresConsecutivos = ultimosIntentos.filter(intento => !intento.es_correcto).length;
+
+            if (erroresConsecutivos >= 2) {
+                requiereApoyo = true;
+                accionSugerida = "activar_pista_o_rescate";
+            } else {
+                accionSugerida = "reintentar";
+            }
+        }
+
+        await connection.end();
+
+        res.json({
+            mensaje: "Intento registrado correctamente", es_correcto,
+            requiere_apoyo: requiereApoyo,
+            accion_sugerida: accionSugerida
+        });
+    } catch (error) {
+        console.error('Error al registrar el intento:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor al registrar el intento'});
     }
 });
 
