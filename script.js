@@ -708,10 +708,8 @@ async function comprobarRespuesta() {
     const buena = s.opciones.find(o => o.ok).t;
     
     // Si el backend indicó que requiere apoyo por múltiples errores, mostramos una pista extra en el mensaje
-    let mensajeError = `<strong>¡Casi!</strong><span>La respuesta correcta es: ${buena}</span>`;
-    if (instruccionBackend === "activar_pista_o_rescate") {
-      mensajeError += `<br><small style="color: #ff006e; font-weight: bold;">💡 Pista del sistema: ¡Lee con atención la teoría de arriba antes de reintentar!</small>`;
-    }
+    const mensajeError = `<strong>¡Casi!</strong><span>La respuesta correcta es: ${buena}</span>`;
+    
 
     configurarPie('mal', mensajeError, 'Continuar');
   }
