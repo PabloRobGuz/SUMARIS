@@ -172,34 +172,67 @@
   </div>
 
   <!-- ================= PANTALLA DE CONFIGURACIÓN ================= -->
-  <div id="pantalla-configuracion" class="pantalla-modal" role="dialog" aria-modal="true">
-    <div class="contenido-modal tarjeta-config">
-      <button class="btn-cerrar-modal" id="cerrar-config" aria-label="Cerrar">✖</button>
-      <h2>Ajustes</h2>
-      
-      <div class="config-grupo">
-        <label for="select-tema">Tema visual:</label>
-        <select id="select-tema">
-          <option value="claro">Tema Claro</option>
-          <option value="oscuro">Tema Oscuro</option>
-        </select>
-      </div>
+<div id="pantalla-configuracion" class="pantalla-config" role="dialog" aria-modal="true" aria-labelledby="titulo-config">
+  <header class="config-barra">
+    <button class="config-volver" id="cerrar-config" aria-label="Volver">←</button>
+    <h2 id="titulo-config">Ajustes</h2>
+    <div class="config-espaciador" aria-hidden="true"></div>
+  </header>
 
-      <div class="config-grupo">
-        <label>
-          <input type="checkbox" id="check-audio" checked> Activar efectos de sonido
-        </label>
-      </div>
+  <main class="config-cuerpo">
+  <div class="tarjeta-config">
 
-      <div class="config-grupo">
-        <label>
-          <input type="checkbox" id="check-accesibilidad"> Modo de alto contraste
-        </label>
-      </div>
+    <div class="config-grupo">
+      <span class="config-etiqueta">Tema visual:</span>
+      <div class="selector-tema" role="group" aria-label="Tema visual">
 
-      <button class="btn btn-primario" id="guardar-config">Guardar Cambios</button>
+        <button type="button" class="btn-tema activa" data-tema="claro"
+                aria-pressed="true" aria-label="Tema claro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1"  x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22"   x2="5.64"  y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1"  y1="12" x2="3"  y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64"  y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <span>Claro</span>
+        </button>
+
+        <button type="button" class="btn-tema" data-tema="oscuro"
+                aria-pressed="false" aria-label="Tema oscuro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <span>Oscuro</span>
+        </button>
+
+      </div>
     </div>
+
+    <div class="config-grupo">
+      <label>
+        <input type="checkbox" id="check-audio" checked> Activar efectos de sonido
+      </label>
+    </div>
+
+    <div class="config-grupo">
+      <label>
+        <input type="checkbox" id="check-accesibilidad"> Modo de alto contraste
+      </label>
+    </div>
+
+    <button class="btn btn-primario" id="guardar-config">Guardar Cambios</button>
+
   </div>
+</main>
 
   <!-- ================= PANTALLA DEL TEST ================= -->
   <div id="pantalla-test">

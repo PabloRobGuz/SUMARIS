@@ -1388,3 +1388,200 @@ body.alto-contraste.tema-oscuro .opcion,
 body.alto-contraste.tema-oscuro .tarjeta-leccion { border-color: #fff; }
 body.alto-contraste.tema-oscuro .tarjeta-tema .etiqueta,
 body.alto-contraste.tema-oscuro .badge-leccion { background: #000; border: 2px solid #fff; }
+
+/* ================================================== */
+/* ========== PANTALLA DE CONFIGURACIÓN (COMPLETA) === */
+/* ================================================== */
+.pantalla-config {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  background: #fff5d1;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(58, 134, 255, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(255, 0, 110, 0.10) 0%, transparent 40%);
+}
+
+.pantalla-config.visible {
+  display: flex;
+  animation: entrarConfig 0.3s ease-out;
+}
+
+@keyframes entrarConfig {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Barra superior azul (igual que la del inicio) */
+.config-barra {
+  background: linear-gradient(135deg, #3a86ff 0%, #4facfe 100%);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 6px 0 rgba(2, 62, 138, 0.3);
+}
+
+.config-barra h2 {
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 0 rgba(2, 62, 138, 0.5);
+  margin: 0;
+}
+
+.config-volver {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #3a86ff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(2, 62, 138, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+}
+.config-volver:hover { filter: brightness(0.95); }
+.config-volver:active { transform: translateY(4px); box-shadow: none; }
+
+.config-espaciador { width: 44px; } /* mantiene el título centrado */
+
+/* Cuerpo scrollable con la tarjeta dentro */
+.config-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+/* Tarjeta blanca con los controles */
+.tarjeta-config {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+
+  background: #ffffff;
+  border: 4px solid #3a86ff;
+  border-radius: 30px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 12px 0 rgba(58, 134, 255, 0.3);
+
+  text-align: center;
+}
+
+.tarjeta-config .config-grupo {
+  width: 100%;
+  margin: 0.8rem 0;
+}
+
+.tarjeta-config #guardar-config {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 640px) {
+  .config-barra { padding: 0.9rem 1rem; }
+  .config-barra h2 { font-size: 1.3rem; }
+  .tarjeta-config { padding: 1.5rem 1.2rem; }
+  .config-cuerpo { padding: 1.5rem 1rem 2rem; }
+}
+
+/* ================================================== */
+/* ========== SELECTOR DE TEMA (SOL / LUNA) ========= */
+/* ================================================== */
+.config-etiqueta {
+  display: block;
+  font-weight: 600;
+  color: inherit;
+  margin-bottom: 0.6rem;
+}
+
+.selector-tema {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-tema {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #3a86ff;
+  background: #f7f9fc;
+  border: 3px solid #c8d6e5;
+  border-radius: 20px;
+  box-shadow: 0 5px 0 #c8d6e5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-tema svg {
+  width: 38px;
+  height: 38px;
+}
+
+.btn-tema:hover {
+  background: #e0f4ff;
+  border-color: #3a86ff;
+}
+
+.btn-tema.activa {
+  background: #3a86ff;
+  color: #ffffff;
+  border-color: #023e8a;
+  box-shadow: 0 5px 0 #023e8a;
+}
+
+.btn-tema.activa:hover {
+  filter: brightness(1.08);
+}
+
+.btn-tema:active {
+  transform: translateY(5px);
+  box-shadow: none;
+}
+
+/* Modo oscuro */
+body.tema-oscuro .btn-tema {
+  background: #1f2b4d;
+  color: #7db4ff;
+  border-color: #34507f;
+  box-shadow: 0 5px 0 #34507f;
+}
+body.tema-oscuro .btn-tema:hover {
+  background: #0f3460;
+  border-color: #3a86ff;
+}
+body.tema-oscuro .btn-tema.activa {
+  background: #3a86ff;
+  color: #ffffff;
+  border-color: #023e8a;
+  box-shadow: 0 5px 0 #023e8a;
+}
+
+/* Alto contraste */
+body.alto-contraste .btn-tema {
+  border-color: #000;
+  box-shadow: 0 5px 0 #000;
+}
+body.alto-contraste.tema-oscuro .btn-tema {
+  border-color: #fff;
+  box-shadow: 0 5px 0 #fff;
+}

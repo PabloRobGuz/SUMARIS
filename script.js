@@ -314,15 +314,27 @@ document.getElementById('btn-salir').addEventListener('click', () => {
   errorLogin.classList.remove('visible');
   pantallaTest.classList.remove('visible');
   idUsuarioActual = null;
+  ajustes = { tema: 'claro', audio: true, contraste: false };
 });
 
 // ========== Configuración ==========
-const selectTema = document.getElementById('select-tema');
+const botonesTema = document.querySelectorAll('.btn-tema');
+let temaSeleccionado = 'claro';
+
+function marcarTemaSeleccionado(tema) {
+  temaSeleccionado = tema;
+  botonesTema.forEach(b => {
+    const activo = b.dataset.tema === tema;
+    b.classList.toggle('activa', activo);
+    b.setAttribute('aria-pressed', activo);
+  });
+}
+
 const checkAudio = document.getElementById('check-audio');
 const checkContraste = document.getElementById('check-accesibilidad');
 
 btnConfig.addEventListener('click', () => {
-  selectTema.value = ajustes.tema;
+  marcarTemaSeleccionado(ajustes.tema);
   checkAudio.checked = ajustes.audio;
   checkContraste.checked = ajustes.contraste;
   pantallaConfig.classList.add('visible');
@@ -330,12 +342,15 @@ btnConfig.addEventListener('click', () => {
 cerrarConfig.addEventListener('click', () => pantallaConfig.classList.remove('visible'));
 
 // El tema se previsualiza al instante; se conserva al pulsar "Guardar Cambios"
-selectTema.addEventListener('change', () => {
-  document.body.classList.toggle('tema-oscuro', selectTema.value === 'oscuro');
+botonesTema.forEach(btn => {
+  btn.addEventListener('click', () => {
+    marcarTemaSeleccionado(btn.dataset.tema);
+    document.body.classList.toggle('tema-oscuro', btn.dataset.tema === 'oscuro');
+  });
 });
 
 guardarConfig.addEventListener('click', () => {
-  ajustes = { tema: selectTema.value, audio: checkAudio.checked, contraste: checkContraste.checked };
+  ajustes = { tema: temaSeleccionado, audio: checkAudio.checked, contraste: checkContraste.checked };
   guardar.escribir('sumaris-ajustes', ajustes);
   aplicarAjustes();
   pantallaConfig.classList.remove('visible');
@@ -345,14 +360,6 @@ guardarConfig.addEventListener('click', () => {
 // NUEVO: Previsualizar el alto contraste al instante mientras se ajusta
 checkContraste.addEventListener('change', () => {
   document.body.classList.toggle('alto-contraste', checkContraste.checked);
-});
-
-guardarConfig.addEventListener('click', () => {
-  ajustes = { tema: selectTema.value, audio: checkAudio.checked, contraste: checkContraste.checked };
-  guardar.escribir('sumaris-ajustes', ajustes);
-  aplicarAjustes();
-  pantallaConfig.classList.remove('visible');
-  mostrarToast('¡Configuración guardada!');
 });
 
 // Si se cierra sin guardar, se restaura el tema guardado
