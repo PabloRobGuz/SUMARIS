@@ -97,6 +97,26 @@
       </div>
     </header>
 
+    <main class="contenido-principal">
+      <section class="saludo">
+        <h2 id="saludo-titulo">¡Hola de nuevo!</h2>
+        <p>Elige un tema para seguir aprendiendo</p>
+      </section>
+
+      <!-- ===== PRÁCTICA MIXTA (aparte de los módulos) ===== -->
+      <section class="practica-mixta" aria-labelledby="titulo-practica-mixta">
+        <button type="button" class="tarjeta-mixta bloqueada" id="btn-practica-mixta" aria-disabled="true">
+          <span class="mixta-icono" aria-hidden="true">🎯</span>
+          <span class="mixta-info">
+            <span class="mixta-titulo" id="titulo-practica-mixta">Práctica mixta</span>
+            <span class="mixta-desc">Repasa en una sola sesión los temas de las lecciones que ya completaste.</span>
+            <span class="mixta-estado" id="mixta-estado">Completa tu primera lección para desbloquearla.</span>
+          </span>
+          <span class="mixta-badge" id="mixta-badge">🔒 Bloqueada</span>
+        </button>
+      </section>
+
+      <h3 class="titulo-seccion" id="titulo-modulos">Módulos</h3>
 
       <div class="grid-temas">
         <!-- CURSO 1: SUMAS -->
@@ -233,6 +253,7 @@
 
   </div>
 </main>
+</div>
 
   <!-- ================= PANTALLA DEL TEST ================= -->
   <div id="pantalla-test">

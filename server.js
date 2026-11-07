@@ -11,7 +11,7 @@ app.use(cors());
 const dbConfig = {
     host: 'localhost',
     user: 'root',          
-    password: 'Venado2026#',
+    password: 'PassL0Lj3j3@',
     database: 'sumaris'
 };
 
@@ -173,7 +173,7 @@ app.post('/api/completar-test', async (req, res) => {
 // RUTA PARA REGISTRAR INTENTO Y ANALIZAR APOYO
 // ==============================================
 app.post('/api/registrar-intento', async (req, res) =>{
-    const { id_usuario, id_nodo, es_correcto, tiempo_respuesta } =req.body;
+    const { id_usuario, id_nodo, es_correcto, tiempo_respuesta, pistas_solicitadas } =req.body;
 
     if (id_usuario === undefined || id_nodo === undefined || es_correcto === undefined) {
         return res.status(400).json({mensaje: 'Faltan datos obligatorios para regisrar intento.'});
@@ -184,8 +184,8 @@ app.post('/api/registrar-intento', async (req, res) =>{
 
         //1. Guardar el intento en la tabla de historial (intento_ejercicio)
         await connection.execute(
-            'INSERT INTO intento_ejercicio (id_usuario, id_nodo, es_correcto, tiempo_respuesta, fecha_intento) VALUES (?, ?, ?, ?, NOW())',
-            [id_usuario, id_nodo, es_correcto, tiempo_respuesta || 0]
+            'INSERT INTO intento_ejercicio (id_usuario, id_nodo, es_correcto, tiempo_respuesta, pistas_solicitadas, fecha_intento) VALUES (?, ?, ?, ?, ?, NOW())',
+            [id_usuario, id_nodo, es_correcto, tiempo_respuesta || 0, pistas_solicitadas || 0]
         );
 
         // 2. Analizar el rendimiento reciente del usuario para decidir si necesita apoyo
