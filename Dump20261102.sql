@@ -101,7 +101,7 @@ CREATE TABLE `nodo_conocimiento` (
   `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `nivel_requisito` int unsigned DEFAULT '1',
   PRIMARY KEY (`id_nodo`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,7 +110,7 @@ CREATE TABLE `nodo_conocimiento` (
 
 LOCK TABLES `nodo_conocimiento` WRITE;
 /*!40000 ALTER TABLE `nodo_conocimiento` DISABLE KEYS */;
-INSERT INTO `nodo_conocimiento` VALUES (1,'Sumas Básicas','Cimientos principales de las matemáticas',1),(2,'Sumas Intermedias','Agrupación y adición de objetos',1),(3,'Sumas Avanzadas','Decenas y unidades',1),(4,'Restas Básicas','Introducción a la sustracción',1),(5,'Restas Intermedias','Quitar elementos y diferencias',1),(6,'Restas Avanzadas','Sustracciones de mayor valor',1),(7,'Multiplicaciones Básicas','Grupos iguales y matrices',1),(8,'Multiplicaciones Intermedias','Suma repetida',1),(9,'Multiplicaciones Avanzadas','Tablas y factores',1);
+INSERT INTO `nodo_conocimiento` VALUES (1,'Sumas Básicas','Cimientos principales de las matemáticas',1),(2,'Sumas Intermedias','Agrupación y adición de objetos',1),(3,'Sumas Avanzadas','Decenas y unidades',1),(4,'Restas Básicas','Introducción a la sustracción',1),(5,'Restas Intermedias','Quitar elementos y diferencias',1),(6,'Restas Avanzadas','Sustracciones de mayor valor',1),(7,'Multiplicaciones Básicas','Grupos iguales y matrices',1),(8,'Multiplicaciones Intermedias','Suma repetida',1),(9,'Multiplicaciones Avanzadas','Tablas y factores',1),(10,'Divisiones Básicas','Repartir en partes iguales',1),(11,'Divisiones Intermedias','El signo de dividir',1),(12,'Divisiones Avanzadas','Dividir con las tablas',1),(13,'Números Básicos','Contar del 1 al 20',1),(14,'Números Intermedios','Mayor, menor e igual',1),(15,'Números Avanzados','Pares e impares',1),(16,'Figuras Básicas','Círculos, cuadrados y triángulos',1),(17,'Figuras Intermedias','Lados y esquinas',1),(18,'Figuras Avanzadas','Cuerpos geométricos',1),(19,'Fracciones Básicas','Partes de un entero',1),(20,'Fracciones Intermedias','Numerador y denominador',1),(21,'Fracciones Avanzadas','Comparar fracciones',1),(22,'Problemas Básicos','Sumar y restar con historias',1),(23,'Problemas Intermedios','Multiplicar y dividir con historias',1),(24,'Problemas Avanzados','Problemas de dos pasos',1);
 /*!40000 ALTER TABLE `nodo_conocimiento` ENABLE KEYS */;
 UNLOCK TABLES;
 

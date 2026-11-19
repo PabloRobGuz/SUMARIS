@@ -7,8 +7,9 @@ const pantallaAuth = document.getElementById('pantalla-auth');
 const interfazPrincipal = document.getElementById('interfaz-principal');
 const errorLogin = document.getElementById('error-login');
 const nombreMostrado = document.getElementById('nombre-mostrado');
+const saludoTitulo = document.getElementById('saludo-titulo');
 
-const API_URL = '/api'; // 👈 Al quitar el "localhost", el navegador usará el mismo dominio desde el que se abrió la página
+const API_URL = 'http://localhost:3000/api';
 
 // ========== Referencias del Test de Diagnóstico ==========
 const pantallaTest = document.getElementById('pantalla-test');
@@ -47,6 +48,51 @@ const preguntas = [
   { texto: "¿Cuántas caras tiene un cubo?", emoji: "🎲", opciones: ["4", "6", "8", "12"], correcta: 1 },
   { texto: "Un rectángulo mide 5 cm de largo y 3 cm de ancho. ¿Cuál es su área?", emoji: "📐", opciones: ["8 cm²", "15 cm²", "16 cm²", "10 cm²"], correcta: 1 }
 ];
+
+// ========== Dibujos de figuras geométricas (SVG sencillo, mismo color del tema "Figuras") ==========
+// tipo: circulo, cuadrado, rectangulo, triangulo, pentagono, hexagono
+function svgFigura(tipo, tam = 56, color = '#ff2e63') {
+  const c = tam / 2;
+  const r = c - 3;
+  const poligono = (lados, giro = -Math.PI / 2) => Array.from({ length: lados }, (_, i) => {
+    const ang = giro + (2 * Math.PI * i) / lados;
+    return `${(c + r * Math.cos(ang)).toFixed(1)},${(c + r * Math.sin(ang)).toFixed(1)}`;
+  }).join(' ');
+  const formas = {
+    circulo: `<circle cx="${c}" cy="${c}" r="${r}"/>`,
+    cuadrado: `<rect x="4" y="4" width="${tam - 8}" height="${tam - 8}" rx="3"/>`,
+    rectangulo: `<rect x="2" y="${(tam * 0.22).toFixed(1)}" width="${tam - 4}" height="${(tam * 0.56).toFixed(1)}" rx="3"/>`,
+    triangulo: `<polygon points="${poligono(3)}" stroke-linejoin="round"/>`,
+    pentagono: `<polygon points="${poligono(5)}" stroke-linejoin="round"/>`,
+    hexagono: `<polygon points="${poligono(6, 0)}" stroke-linejoin="round"/>`
+  };
+  return `<svg class="figura-svg" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" fill="${color}" stroke="rgba(0,0,0,0.25)" stroke-width="2" aria-hidden="true">${formas[tipo]}</svg>`;
+}
+
+// ========== Dibujos de fracciones (pizza y barra de chocolate, mismo color del tema "Fracciones") ==========
+// svgFraccion: pizza partida en `den` trozos iguales con `num` trozos pintados
+function svgFraccion(num, den, tam = 64, color = '#00b4d8') {
+  const c = tam / 2;
+  const r = c - 3;
+  const punto = (ang) => `${(c + r * Math.cos(ang)).toFixed(1)},${(c + r * Math.sin(ang)).toFixed(1)}`;
+  const trozos = den === 1
+    ? `<circle cx="${c}" cy="${c}" r="${r}" fill="${num >= 1 ? color : '#ffffff'}"/>`
+    : Array.from({ length: den }, (_, i) => {
+        const a0 = -Math.PI / 2 + (2 * Math.PI * i) / den;
+        const a1 = -Math.PI / 2 + (2 * Math.PI * (i + 1)) / den;
+        return `<path d="M${c},${c} L${punto(a0)} A${r},${r} 0 0 1 ${punto(a1)} Z" fill="${i < num ? color : '#ffffff'}"/>`;
+      }).join('');
+  return `<svg class="figura-svg" width="${tam}" height="${tam}" viewBox="0 0 ${tam} ${tam}" stroke="rgba(0,0,0,0.35)" stroke-width="2" stroke-linejoin="round" aria-hidden="true">${trozos}</svg>`;
+}
+
+// svgBarra: barra de chocolate dividida en `den` cuadritos iguales con `num` cuadritos pintados
+function svgBarra(num, den, ancho = 128, color = '#00b4d8') {
+  const alto = 40;
+  const w = (ancho - 4) / den;
+  const cuadritos = Array.from({ length: den }, (_, i) =>
+    `<rect x="${(2 + i * w).toFixed(1)}" y="2" width="${w.toFixed(1)}" height="${alto - 4}" fill="${i < num ? color : '#ffffff'}"/>`).join('');
+  return `<svg class="figura-svg" width="${ancho}" height="${alto}" viewBox="0 0 ${ancho} ${alto}" stroke="rgba(0,0,0,0.35)" stroke-width="2" stroke-linejoin="round" aria-hidden="true">${cuadritos}</svg>`;
+}
 
 // ========== Base de Datos de Cursos y sus 3 Lecciones con Contenido Real ==========
 const cursosData = {
@@ -137,6 +183,161 @@ const cursosData = {
         reto: "Resuelve: 5 x 4 =",
         opciones: ["15", "20", "25"],
         correcta: 1 
+      }
+    ]
+  },
+  divisiones: {
+    titulo: "➗ Divisiones",
+    descripcion: "Aprende a repartir en partes iguales de forma divertida",
+    lecciones: [
+      {
+        id: 1,
+        titulo: "Lección 1: Repartir en partes iguales",
+        teoria: "Dividir es repartir una cantidad en grupos iguales, para que todos reciban lo mismo. Por ejemplo, si tienes 6 galletas y las repartes entre 2 amigos, cada uno recibe 3 galletas.",
+        reto: "Si repartes 8 caramelos entre 2 amigos por igual, ¿cuántos recibe cada uno?",
+        opciones: ["3", "4", "5"],
+        correcta: 1
+      },
+      {
+        id: 2,
+        titulo: "Lección 2: El signo de dividir",
+        teoria: "El signo de la división es ÷ y se lee 'entre'. Por ejemplo, 6 ÷ 2 = 3 significa que al repartir 6 cosas en 2 grupos iguales, cada grupo tiene 3.",
+        reto: "Resuelve: 10 ÷ 2 =",
+        opciones: ["4", "5", "6"],
+        correcta: 1
+      },
+      {
+        id: 3,
+        titulo: "Lección 3: Dividir con las tablas",
+        teoria: "La división es la operación contraria a la multiplicación. Si 3 x 4 = 12, entonces 12 ÷ 3 = 4 y 12 ÷ 4 = 3. Por eso las tablas de multiplicar te ayudan a dividir.",
+        reto: "Resuelve: 20 ÷ 4 =",
+        opciones: ["4", "5", "6"],
+        correcta: 1
+      }
+    ]
+  },
+  numeros: {
+    titulo: "🔢 Los Números",
+    descripcion: "Cuenta, ordena y conoce los números",
+    lecciones: [
+      {
+        id: 1,
+        titulo: "Lección 1: Contar del 1 al 20",
+        teoria: "Contar es decir los números en orden, uno por cada objeto. Después del 1 viene el 2, luego el 3 y así sucesivamente. Cada número es uno más que el anterior.",
+        reto: "Cuenta las manzanas. ¿Cuántas hay?",
+        visual: "🍎🍎🍎🍎🍎🍎",
+        opciones: ["5", "6", "7"],
+        correcta: 1
+      },
+      {
+        id: 2,
+        titulo: "Lección 2: Mayor, menor e igual",
+        teoria: "Comparar es decidir qué número es mayor, menor o igual a otro. Un número es mayor si tiene más cosas y menor si tiene menos. Por ejemplo, 9 es mayor que 4 porque 9 cosas son más que 4.",
+        reto: "Completa con el signo correcto: 8 __ 5",
+        opciones: ["&lt;", "&gt;", "="],
+        correcta: 1
+      },
+      {
+        id: 3,
+        titulo: "Lección 3: Pares e impares",
+        teoria: "Los números pares se pueden juntar en parejas sin que sobre ninguno: 2, 4, 6, 8, 10. Los impares siempre dejan uno sin pareja: 1, 3, 5, 7, 9. Los pares terminan en 0, 2, 4, 6 u 8.",
+        reto: "¿Cuál de estos números es par?",
+        opciones: ["7", "12", "15"],
+        correcta: 1
+      }
+    ]
+  },
+  figuras: {
+    titulo: "🔺 Figuras Geométricas",
+    descripcion: "Descubre círculos, triángulos y más",
+    lecciones: [
+      {
+        id: 1,
+        titulo: "Lección 1: Círculos, cuadrados y triángulos",
+        teoria: "Las figuras geométricas están a nuestro alrededor. El círculo es redondo y no tiene esquinas, el cuadrado tiene 4 lados iguales, el triángulo tiene 3 lados y el rectángulo tiene 4 lados: dos largos y dos cortos.",
+        reto: "¿Cómo se llama esta figura?",
+        visual: svgFigura('triangulo', 90),
+        opciones: ["Cuadrado", "Círculo", "Triángulo"],
+        correcta: 2
+      },
+      {
+        id: 2,
+        titulo: "Lección 2: Lados y esquinas",
+        teoria: "Los lados son las líneas que forman una figura y las esquinas, que se llaman vértices, son los puntos donde se juntan dos lados. El pentágono tiene 5 lados y 5 vértices, y el hexágono tiene 6.",
+        reto: "¿Cuántos lados tiene esta figura?",
+        visual: svgFigura('pentagono', 90),
+        opciones: ["5", "6", "4"],
+        correcta: 0
+      },
+      {
+        id: 3,
+        titulo: "Lección 3: Cuerpos geométricos",
+        teoria: "Algunas figuras no son planas: tienen volumen y las podemos tocar. Se llaman cuerpos geométricos. La esfera es como una pelota, el cubo es como un dado, el cilindro es como una lata y el cono es como un gorro de fiesta.",
+        reto: "¿Qué cuerpo geométrico tiene forma de pelota?",
+        opciones: ["Cubo", "Cono", "Esfera"],
+        correcta: 2
+      }
+    ]
+  },
+  fracciones: {
+    titulo: "🍕 Fracciones",
+    descripcion: "Aprende con pizza y chocolate",
+    lecciones: [
+      {
+        id: 1,
+        titulo: "Lección 1: Partes de un entero",
+        teoria: "Una fracción es una o varias partes iguales de un entero. Si partes una pizza en 4 trozos iguales y te comes 1, comiste un cuarto de la pizza. Se escribe 1/4: el número de abajo dice en cuántas partes iguales se partió el entero y el de arriba cuántas partes tomamos.",
+        reto: "Esta pizza se partió en 4 trozos iguales y te comes el trozo de color. ¿Qué fracción de la pizza comiste?",
+        visual: svgFraccion(1, 4, 90),
+        opciones: ["1/2", "1/4", "4/1"],
+        correcta: 1
+      },
+      {
+        id: 2,
+        titulo: "Lección 2: Numerador y denominador",
+        teoria: "Las dos partes de una fracción tienen nombre. El número de abajo es el denominador y dice en cuántas partes iguales se partió el entero. El número de arriba es el numerador y dice cuántas de esas partes tomamos. En 3/4, el entero se partió en 4 partes y tomamos 3.",
+        reto: "Mira la pizza. ¿Qué fracción está pintada?",
+        visual: svgFraccion(3, 4, 90),
+        opciones: ["3/4", "4/3", "1/4"],
+        correcta: 0
+      },
+      {
+        id: 3,
+        titulo: "Lección 3: Comparar fracciones",
+        teoria: "Comparar fracciones es decidir cuál es más grande. Si dos fracciones tienen el mismo denominador, sus trozos son del mismo tamaño y es mayor la que tiene más trozos, es decir, el numerador más grande. Por ejemplo, 3/8 es mayor que 2/8.",
+        reto: "¿Qué fracción de pizza es mayor: 2/6 o 5/6?",
+        opciones: ["2/6", "5/6", "Son iguales"],
+        correcta: 1
+      }
+    ]
+  },
+  problemas: {
+    titulo: "🧩 Problemas",
+    descripcion: "Resuelve retos con lógica y matemáticas",
+    lecciones: [
+      {
+        id: 1,
+        titulo: "Lección 1: Problemas de sumar y restar",
+        teoria: "Un problema es una historia con una pregunta. Para resolverlo, lee con calma, busca los datos, decide qué operación necesitas y calcula. Las palabras «en total» y «más» avisan de una suma, y «quedan» o «se van» avisan de una resta.",
+        reto: "Luis tiene 8 canicas y gana 5 más. ¿Cuántas canicas tiene en total?",
+        opciones: ["12", "13", "14"],
+        correcta: 1
+      },
+      {
+        id: 2,
+        titulo: "Lección 2: Problemas de multiplicar y dividir",
+        teoria: "Cuando hay grupos iguales y quieres saber el total, multiplicas. Cuando repartes una cantidad en partes iguales, divides. Por ejemplo, 3 bolsas con 4 naranjas cada una son 3 x 4 = 12 naranjas, y repartir 12 naranjas entre 3 niños es 12 ÷ 3 = 4.",
+        reto: "Hay 4 bolsas con 5 manzanas cada una. ¿Cuántas manzanas hay en total?",
+        opciones: ["9", "20", "25"],
+        correcta: 1
+      },
+      {
+        id: 3,
+        titulo: "Lección 3: Problemas de dos pasos",
+        teoria: "Algunos problemas necesitan dos operaciones. Se resuelven por partes: primero haces una operación y después usas su resultado para hacer la otra. ¡Es como subir una escalera, un escalón a la vez!",
+        reto: "Ana tenía 10 galletas, compró 5 más y luego se comió 3. ¿Cuántas galletas le quedan?",
+        opciones: ["11", "12", "13"],
+        correcta: 1
       }
     ]
   }
@@ -405,6 +606,66 @@ const ejerciciosExtra = {
   'multiplicaciones-3': [
     ['3 x 5 =', ['10', '15', '20'], 1, 'Salta de 5 en 5 tres veces. Recuerda que los resultados de la tabla del 5 terminan en 0 o en 5.'],
     ['4 x 4 =', ['12', '16', '8'], 1, 'Imagina una cuadrícula de 4 filas con 4 cuadritos en cada una y suma el contenido de las filas.']
+  ],
+  'divisiones-1': [
+    ['Tienes 6 galletas y las repartes entre 3 niños por igual. ¿Cuántas galletas recibe cada niño?', ['3', '2', '4'], 1, 'Da una galleta a cada niño, una por una, y repite hasta que se acaben. Después cuenta las que tiene un solo niño.'],
+    ['Si repartes 10 estrellas entre 5 amigos por igual, ¿cuántas estrellas recibe cada uno?', ['2', '5', '3'], 0, 'Reparte las estrellas de una en una entre los 5 amigos, como si repartieras cartas, hasta que no quede ninguna.']
+  ],
+  'divisiones-2': [
+    ['¿Cómo se lee el signo ÷ ?', ['Entre', 'Más', 'Por'], 0, 'Piensa en la palabra que usamos al repartir, como en «6 galletas ___ 2 niños».'],
+    ['12 ÷ 3 =', ['4', '3', '5'], 0, 'Reparte 12 objetos en 3 grupos, uno por grupo, hasta que se acaben. Cuenta cuántos tiene cada grupo.']
+  ],
+  'divisiones-3': [
+    ['Si 3 x 5 = 15, entonces 15 ÷ 5 =', ['5', '3', '10'], 1, 'Una división deshace una multiplicación. Piensa: ¿qué número multiplicado por 5 da 15?'],
+    ['18 ÷ 2 =', ['8', '9', '7'], 1, 'Busca el número que, multiplicado por 2, da 18. También puedes repartir 18 objetos en 2 grupos.']
+  ],
+  'numeros-1': [
+    ['¿Qué número viene después del 9?', ['8', '10', '11'], 1, 'Cuenta en voz alta: siete, ocho, nueve... ¿cuál es el número que sigue?'],
+    ['Cuenta las estrellas. ¿Cuántas hay?', ['8', '9', '10'], 0, 'Señala cada estrella con el dedo y di un número por cada una, sin saltarte ninguna.', '⭐⭐⭐⭐⭐⭐⭐⭐']
+  ],
+  'numeros-2': [
+    ['¿Qué número es mayor: 12 o 15?', ['12', '15', 'Son iguales'], 1, 'Los dos tienen una decena. Compara las unidades: el que tenga más unidades es el mayor.'],
+    ['Completa con el signo correcto: 3 __ 9', ['&lt;', '&gt;', '='], 0, 'La boca del signo siempre se abre hacia el número más grande. ¿Cuál de los dos es el más grande?']
+  ],
+  'numeros-3': [
+    ['¿Cuál de estos números es impar?', ['10', '16', '13'], 2, 'Mira la última cifra de cada número. Los impares terminan en 1, 3, 5, 7 o 9.'],
+    ['Si cuentas de 2 en 2 desde el 2, ¿qué número sigue? 2, 4, 6, __', ['7', '8', '10'], 1, 'Cada número es 2 más que el anterior. Suma 2 al último número que ves.']
+  ],
+  'figuras-1': [
+    ['¿Qué figura es redonda y no tiene esquinas?', ['Cuadrado', 'Círculo', 'Rectángulo'], 1, 'Piensa en una moneda o en una rueda: ¿tienen esquinas o son completamente redondas?'],
+    ['¿Cómo se llama esta figura?', ['Triángulo', 'Rectángulo', 'Cuadrado'], 2, 'Cuenta sus lados y fíjate si todos miden lo mismo. Compáralo con lo que viste en la teoría.', svgFigura('cuadrado', 90)]
+  ],
+  'figuras-2': [
+    ['¿Cómo se llaman las esquinas de una figura?', ['Vértices', 'Lados', 'Caras'], 0, 'Es el nombre del punto donde se juntan dos lados de la figura.'],
+    ['¿Qué figura tiene 3 lados y 3 esquinas?', ['Cuadrado', 'Círculo', 'Triángulo'], 2, 'Piensa en el techo de una casita o en una señal de precaución. Cuenta sus lados.']
+  ],
+  'figuras-3': [
+    ['¿Cuántas caras tiene un cubo?', ['4', '6', '8'], 1, 'Piensa en un dado: cuenta la cara de arriba, la de abajo y las cuatro de los lados.'],
+    ['¿A qué cuerpo geométrico se parece una lata de atún?', ['Cilindro', 'Cono', 'Esfera'], 0, 'Fíjate en que tiene dos círculos planos, uno arriba y otro abajo, y un lado curvo en medio.']
+  ],
+  'fracciones-1': [
+    ['¿En cuántas partes iguales está partida esta pizza?', ['2', '3', '4'], 1, 'Cuenta todos los trozos de la pizza, tanto el que tiene color como los que están en blanco.', svgFraccion(1, 3, 90)],
+    ['Partes una barra de chocolate en 2 partes iguales y te comes una. ¿Qué fracción comiste?', ['La mitad', 'Un cuarto', 'Un tercio'], 0, 'Si partes algo en 2 partes iguales, cada parte es la mitad. ¿Cuántas partes comiste?', svgBarra(1, 2)]
+  ],
+  'fracciones-2': [
+    ['En la fracción 2/5, ¿cuál es el numerador?', ['2', '5', '7'], 0, 'El numerador es el número de arriba: dice cuántas partes tomamos.'],
+    ['Esta barra de chocolate tiene 6 cuadritos y te comes los pintados. ¿Qué fracción comiste?', ['6/5', '5/6', '1/6'], 1, 'Cuenta los cuadritos pintados para el numerador y todos los cuadritos de la barra para el denominador.', svgBarra(5, 6)]
+  ],
+  'fracciones-3': [
+    ['¿Qué fracción es mayor: 3/8 o 5/8?', ['3/8', '5/8', 'Son iguales'], 1, 'Las dos fracciones tienen trozos del mismo tamaño (octavos). Gana la que tiene más trozos.'],
+    ['Si partes una pizza en 2 trozos iguales o en 8 trozos iguales, ¿en cuál caso cada trozo es más grande?', ['En 2 trozos', 'En 8 trozos', 'Son iguales'], 0, 'Imagina que repartes la misma pizza entre pocas o entre muchas personas: ¿a quién le toca un trozo más grande?']
+  ],
+  'problemas-1': [
+    ['Hay 12 patos en el lago y se van 4. ¿Cuántos patos quedan?', ['8', '7', '9'], 0, '«Se van» y «quedan» avisan de una resta. Parte de 12 y quita los 4 que se van.'],
+    ['Sofía tiene 6 lápices rojos y 7 lápices azules. ¿Cuántos lápices tiene en total?', ['12', '13', '14'], 1, '«En total» avisa de una suma: junta los lápices rojos con los azules.']
+  ],
+  'problemas-2': [
+    ['En el parque hay 3 mesas con 4 niños en cada una. ¿Cuántos niños hay en total?', ['7', '12', '10'], 1, 'Son grupos iguales: 3 mesas con 4 niños cada una. Multiplica o suma el 4 tres veces.'],
+    ['Tienes 15 caramelos y los repartes entre 5 amigos por igual. ¿Cuántos caramelos recibe cada uno?', ['3', '5', '10'], 0, '«Repartes entre» avisa de una división. Busca el número que multiplicado por 5 da 15.']
+  ],
+  'problemas-3': [
+    ['Tomás tiene 7 cromos, compra 5 más y luego regala 4. ¿Cuántos cromos le quedan?', ['8', '9', '16'], 0, 'Resuélvelo en dos pasos: primero suma los cromos que compra y, al resultado, réstale los que regala.'],
+    ['Hay 3 cajas con 4 lápices cada una y se pierden 2 lápices. ¿Cuántos lápices quedan?', ['12', '10', '14'], 1, 'Primero calcula cuántos lápices hay en total en las cajas y después quita los que se pierden.']
   ]
 };
 
@@ -418,7 +679,22 @@ const pistasReto = {
   'restas-3': 'Separa el 7 en dos partes más fáciles y quítalas de 20 una después de otra.',
   'multiplicaciones-1': 'Imagina 4 + 4 + 4: el 4 se repite tantas veces como indica la pregunta. Suma de dos en dos.',
   'multiplicaciones-2': 'Multiplicar por 2 es buscar el doble: suma el 5 consigo mismo.',
-  'multiplicaciones-3': 'Piensa en 5 grupos de 4 (o 4 grupos de 5) y suma de forma repetida, o salta de 5 en 5 cuatro veces.'
+  'multiplicaciones-3': 'Piensa en 5 grupos de 4 (o 4 grupos de 5) y suma de forma repetida, o salta de 5 en 5 cuatro veces.',
+  'divisiones-1': 'Reparte los 8 caramelos de uno en uno entre los 2 amigos, como si repartieras cartas. Cuenta cuántos le tocaron a un amigo.',
+  'divisiones-2': 'Reparte 10 objetos en 2 grupos, uno para cada grupo, hasta que se acaben. Cuenta cuántos hay en un grupo.',
+  'divisiones-3': 'Piensa qué número multiplicado por 4 da 20. Salta de 4 en 4 hasta llegar al 20 y cuenta los saltos.',
+  'numeros-1': 'Señala cada manzana con el dedo y di un número por cada una, sin saltarte ni repetir ninguna.',
+  'numeros-2': 'Imagina que el signo es la boca de un cocodrilo: siempre se abre hacia el número más grande.',
+  'numeros-3': 'Mira la última cifra de cada número. Los pares terminan en 0, 2, 4, 6 u 8.',
+  'figuras-1': 'Cuenta cuántos lados y cuántas esquinas tiene la figura. Compárala con las que viste en la teoría.',
+  'figuras-2': 'Recorre el borde de la figura con tu dedo y cuenta cada lado, empezando en una esquina.',
+  'figuras-3': 'Piensa en un objeto redondo que puedas lanzar o patear. ¿Qué cuerpo geométrico tiene esa forma?',
+  'fracciones-1': 'Cuenta cuántos trozos iguales tiene la pizza en total: ese número va abajo. Después cuenta cuántos trozos están pintados: ese va arriba.',
+  'fracciones-2': 'Cuenta todos los trozos de la pizza para el número de abajo y los trozos pintados para el número de arriba.',
+  'fracciones-3': 'Las dos fracciones tienen el mismo denominador, así que los trozos son del mismo tamaño. Gana la fracción que tiene más trozos.',
+  'problemas-1': 'Busca las palabras que avisan de la operación: «en total» y «más» son de sumar. Después junta 8 y 5.',
+  'problemas-2': 'Son grupos iguales: 4 bolsas con 5 manzanas en cada una. Suma 5 cuatro veces o salta de 5 en 5.',
+  'problemas-3': 'Resuélvelo por partes: primero suma las galletas que compra y, al resultado, réstale las que se come.'
 };
 
 // Ejercicios interactivos por lección (se intercalan con las preguntas de opción múltiple)
@@ -532,6 +808,184 @@ const ejerciciosInteractivos = {
     { tipo: 'relacionar', q: 'Une cada descripción de filas con su multiplicación.',
       pares: [['2 filas de 4', '2 x 4'], ['3 filas de 3', '3 x 3'], ['4 filas de 5', '4 x 5'], ['5 filas de 2', '5 x 2']],
       pista: 'El primer número indica cuántas filas hay y el segundo cuántos objetos tiene cada fila: se escribe «filas x objetos».' }
+  ],
+  'divisiones-1': [
+    { tipo: 'escrita', q: 'Tienes 12 lápices y los repartes entre 4 niños por igual. ¿Cuántos lápices recibe cada niño?', respuestas: ['3', 'tres'], numerico: true,
+      pista: 'Reparte los lápices de uno en uno entre los 4 niños y repite hasta que no quede ninguno. Después cuenta los de un niño.' },
+    { tipo: 'relacionar', q: 'Une cada reparto con lo que recibe cada niño.',
+      pares: [['4 dulces entre 2 niños', '2'], ['9 dulces entre 3 niños', '3'], ['8 dulces entre 2 niños', '4'], ['10 dulces entre 2 niños', '5']],
+      pista: 'Reparte los dulces de uno en uno entre los niños y cuenta cuántos le tocan a cada uno. Después busca ese número en la otra columna.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada reparto a la caja con lo que recibe cada niño.',
+      zonas: [{ id: 'a', titulo: 'Cada niño recibe 2' }, { id: 'b', titulo: 'Cada niño recibe 3' }],
+      fichas: [{ t: '4 entre 2', zona: 'a' }, { t: '6 entre 3', zona: 'a' }, { t: '10 entre 5', zona: 'a' },
+               { t: '6 entre 2', zona: 'b' }, { t: '9 entre 3', zona: 'b' }, { t: '12 entre 4', zona: 'b' }],
+      pista: 'Calcula cuánto recibe cada niño en cada reparto. Para comprobar, multiplica lo que recibe cada uno por el número de niños: debe darte el total.' }
+  ],
+  'divisiones-2': [
+    { tipo: 'escrita', q: 'Hay 14 manzanas y se reparten entre 2 cestas por igual. ¿Cuántas manzanas hay en cada cesta?', respuestas: ['7', 'siete'], numerico: true,
+      pista: '«Entre 2 cestas» significa 2 grupos. Piensa en la división de las 14 manzanas y reparte de una en una.' },
+    { tipo: 'relacionar', q: 'Une cada historia con la división que la representa.',
+      pares: [['Repartes 8 galletas entre 2 niños', '8 ÷ 2'], ['Repartes 9 dulces entre 3 amigos', '9 ÷ 3'],
+              ['Repartes 10 lápices entre 5 niños', '10 ÷ 5'], ['Repartes 12 estrellas entre 4 cajas', '12 ÷ 4']],
+      pista: 'En cada historia, el primer número es lo que se reparte y el número que va después de «entre» es el de grupos. Escribe la división en ese orden.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para convertir una historia en una división.',
+      pasos: ['Lee la historia y busca cuántas cosas hay que repartir', 'Busca entre cuántas personas o grupos se reparte',
+              'Escribe la cantidad total, el signo ÷ y el número de grupos', 'Calcula cuánto recibe cada uno y escríbelo después del signo ='],
+      pista: 'Primero entiendes la historia, luego escribes la división y, por último, calculas lo que recibe cada uno.' }
+  ],
+  'divisiones-3': [
+    { tipo: 'escrita', q: 'Escribe el resultado de 24 ÷ 4.', respuestas: ['6', 'seis'], numerico: true,
+      pista: 'Busca el número que multiplicado por 4 da 24. Puedes saltar de 4 en 4 y contar los saltos que das hasta llegar a 24.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada división a la caja con su resultado.',
+      zonas: [{ id: 'a', titulo: 'El resultado es 3' }, { id: 'b', titulo: 'El resultado es 5' }],
+      fichas: [{ t: '6 ÷ 2', zona: 'a' }, { t: '9 ÷ 3', zona: 'a' }, { t: '12 ÷ 4', zona: 'a' },
+               { t: '10 ÷ 2', zona: 'b' }, { t: '15 ÷ 3', zona: 'b' }, { t: '20 ÷ 4', zona: 'b' }],
+      pista: 'Resuelve cada división con la tabla de multiplicar del número que divide. Para comprobar, multiplica el resultado por ese número.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para resolver 12 ÷ 3 usando la multiplicación.',
+      pasos: ['Lee la división: 12 ÷ 3', 'Busca qué número multiplicado por 3 da 12', 'Prueba con la tabla del 3: 3 x 4 = 12', 'Escribe el resultado: 12 ÷ 3 = 4'],
+      pista: 'Primero lees la división, luego buscas el número que falta con la tabla y, al final, escribes el resultado.' }
+  ],
+  'numeros-1': [
+    { tipo: 'escrita', q: 'Cuenta los globos y escribe cuántos hay.', respuestas: ['12', 'doce'], numerico: true,
+      visual: '🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈🎈',
+      pista: 'Cuenta de uno en uno y señala cada globo con el dedo para no repetir ninguno. El último número que digas es el total.' },
+    { tipo: 'relacionar', q: 'Une cada número con su nombre.',
+      pares: [['3', 'tres'], ['5', 'cinco'], ['8', 'ocho'], ['10', 'diez']],
+      pista: 'Recuerda la lista de nombres: uno, dos, tres, cuatro, cinco... Cuenta con los dedos hasta llegar a cada número.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada número a la caja que le corresponde.',
+      zonas: [{ id: 'a', titulo: 'Del 1 al 5' }, { id: 'b', titulo: 'Del 6 al 10' }],
+      fichas: [{ t: '2', zona: 'a' }, { t: '4', zona: 'a' }, { t: '5', zona: 'a' },
+               { t: '7', zona: 'b' }, { t: '9', zona: 'b' }, { t: '10', zona: 'b' }],
+      pista: 'Cuenta desde el 1 y fíjate en si el número aparece antes o después del 5. El 5 pertenece a la primera caja.' }
+  ],
+  'numeros-2': [
+    { tipo: 'escrita', q: '¿Qué número es menor: 14 o 11? Escríbelo.', respuestas: ['11', 'once'], numerico: true,
+      pista: 'Los dos tienen una decena. Compara las unidades y elige el número que tenga menos.' },
+    { tipo: 'relacionar', q: 'Une cada pareja de números con el número mayor.',
+      pares: [['4 y 7', '7'], ['9 y 6', '9'], ['12 y 15', '15'], ['20 y 18', '20']],
+      pista: 'En cada pareja, el número mayor es el que tiene más cosas. Si tienen igual de decenas, compara las unidades.' },
+    { tipo: 'ordenar', q: 'Ordena estos números de menor a mayor.',
+      pasos: ['3', '8', '12', '17', '21'],
+      pista: 'Empieza por el número más pequeño y avanza hacia el más grande. Los de una cifra siempre son menores que los de dos cifras.' }
+  ],
+  'numeros-3': [
+    { tipo: 'escrita', q: 'Escribe el número que sigue: 10, 12, 14, 16, __', respuestas: ['18', 'dieciocho'], numerico: true,
+      pista: 'Fíjate de cuánto en cuánto avanzan los números. Súmale esa misma cantidad al último que ves.' },
+    { tipo: 'arrastrar', q: 'Clasifica cada número: ¿es par o impar?',
+      zonas: [{ id: 'p', titulo: 'Pares' }, { id: 'i', titulo: 'Impares' }],
+      fichas: [{ t: '14', zona: 'p' }, { t: '9', zona: 'i' }, { t: '20', zona: 'p' },
+               { t: '17', zona: 'i' }, { t: '6', zona: 'p' }, { t: '5', zona: 'i' }],
+      pista: 'Mira la última cifra: si es 0, 2, 4, 6 u 8, el número es par. Si no, es impar.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para saber si un número es par o impar.',
+      pasos: ['Mira el número que quieres clasificar', 'Fíjate en su última cifra', 'Compara esa cifra con 0, 2, 4, 6 y 8', 'Decide: si coincide es par; si no coincide es impar'],
+      pista: 'Primero miras el número, luego te fijas en la última cifra, la comparas con la lista y, al final, decides.' }
+  ],
+  'figuras-1': [
+    { tipo: 'escrita', q: 'Escribe cuántos lados tiene un cuadrado.', respuestas: ['4', 'cuatro'], numerico: true,
+      pista: 'Imagina que dibujas un cuadrado con tu dedo y cuenta cuántas líneas rectas trazas hasta cerrarlo.' },
+    { tipo: 'relacionar', q: 'Une cada objeto con la figura que tiene.',
+      pares: [['Una moneda', 'Círculo'], ['Una baldosa cuadrada', 'Cuadrado'], ['Una señal de precaución', 'Triángulo'], ['Una puerta', 'Rectángulo']],
+      pista: 'Piensa en la forma del contorno de cada objeto: si es redondo, cuántos lados rectos tiene y si todos miden lo mismo.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada figura u objeto a la caja según tenga esquinas o no.',
+      zonas: [{ id: 'e', titulo: 'Tiene esquinas' }, { id: 'n', titulo: 'No tiene esquinas' }],
+      fichas: [{ t: 'Cuadrado', zona: 'e' }, { t: 'Triángulo', zona: 'e' }, { t: 'Puerta', zona: 'e' },
+               { t: 'Círculo', zona: 'n' }, { t: 'Moneda', zona: 'n' }, { t: 'Rueda', zona: 'n' }],
+      pista: 'Las figuras con lados rectos tienen esquinas donde se juntan sus lados. Las redondas no tienen ninguna.' }
+  ],
+  'figuras-2': [
+    { tipo: 'escrita', q: 'Si juntas un cuadrado y un triángulo, ¿cuántos lados tienen entre las dos figuras?', respuestas: ['7', 'siete'], numerico: true,
+      pista: 'Recuerda cuántos lados tiene cada figura y suma las dos cantidades.' },
+    { tipo: 'relacionar', q: 'Une cada figura con su número de lados.',
+      pares: [['Triángulo', '3 lados'], ['Cuadrado', '4 lados'], ['Pentágono', '5 lados'], ['Hexágono', '6 lados']],
+      pista: 'Los nombres te dan una pista: el triángulo tiene tres ángulos y el pentágono es el que tiene cinco. Cuenta con el dedo los lados de cada figura.' },
+    { tipo: 'ordenar', q: 'Ordena estas figuras de la que tiene menos lados a la que tiene más.',
+      pasos: ['Triángulo', 'Cuadrado', 'Pentágono', 'Hexágono'],
+      pista: 'Recuerda cuántos lados tiene cada figura y empieza por la que tenga menos.' }
+  ],
+  'figuras-3': [
+    { tipo: 'escrita', q: 'Una pelota es una esfera. ¿Cuántas esquinas tiene una esfera?', respuestas: ['0', 'cero', 'ninguna'], numerico: true,
+      pista: 'Piensa en una pelota: ¿hay algún punto donde se junten dos lados, o es toda curva?' },
+    { tipo: 'arrastrar', q: 'Arrastra cada objeto a la caja del cuerpo geométrico al que se parece.',
+      zonas: [{ id: 'e', titulo: 'Se parece a una esfera' }, { id: 'c', titulo: 'Se parece a un cilindro' }],
+      fichas: [{ t: 'Pelota', zona: 'e' }, { t: 'Canica', zona: 'e' }, { t: 'Globo terráqueo', zona: 'e' },
+               { t: 'Lata', zona: 'c' }, { t: 'Tubo de cartón', zona: 'c' }, { t: 'Barril', zona: 'c' }],
+      pista: 'La esfera es toda redonda, como una pelota. El cilindro tiene dos círculos planos y un lado curvo, como una lata.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para reconocer un cuerpo geométrico.',
+      pasos: ['Mira el objeto y toca su forma', 'Pregúntate si tiene partes planas o es todo curvo', 'Cuenta sus caras y sus esquinas', 'Compáralo con el cubo, la esfera, el cilindro y el cono, y elige su nombre'],
+      pista: 'Primero observas el objeto, luego te fijas en sus partes y, al final, lo comparas con los cuerpos que conoces.' }
+  ],
+  'fracciones-1': [
+    { tipo: 'escrita', q: 'Una pizza se partió en 6 trozos iguales y te comes 1. Escribe la fracción que comiste (por ejemplo, 1/2).', respuestas: ['1/6', '1 / 6'],
+      visual: svgFraccion(1, 6, 90),
+      pista: 'Cuenta en cuántos trozos iguales se partió la pizza: ese número va abajo. Después cuenta los trozos que comiste: ese va arriba.' },
+    { tipo: 'relacionar', q: 'Une cada parte de una pizza con su fracción.',
+      pares: [['La mitad de una pizza', '1/2'], ['Un tercio de una pizza', '1/3'], ['Un cuarto de una pizza', '1/4'], ['Un sexto de una pizza', '1/6']],
+      pista: 'Mientras más trozos iguales tiene la pizza, más grande es el número de abajo. La mitad es la que se parte en solo 2 trozos.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada fracción a la caja que dice en cuántas partes iguales está partido el entero.',
+      zonas: [{ id: 'a', titulo: 'Partido en 4 partes' }, { id: 'b', titulo: 'Partido en 8 partes' }],
+      fichas: [{ t: '1/4', zona: 'a' }, { t: '3/4', zona: 'a' }, { t: '2/4', zona: 'a' },
+               { t: '1/8', zona: 'b' }, { t: '5/8', zona: 'b' }, { t: '7/8', zona: 'b' }],
+      pista: 'Fíjate solo en el número de abajo de cada fracción: ese es el que dice en cuántas partes iguales se partió el entero.' }
+  ],
+  'fracciones-2': [
+    { tipo: 'escrita', q: 'Una pizza está partida en 8 trozos iguales y te comes 3. Escribe la fracción que comiste (por ejemplo, 1/2).', respuestas: ['3/8', '3 / 8'],
+      visual: svgFraccion(3, 8, 90),
+      pista: 'El número de abajo es el total de trozos de la pizza y el de arriba son los trozos que comiste.' },
+    { tipo: 'relacionar', q: 'Une cada fracción con la forma de leerla.',
+      pares: [['1/2', 'un medio'], ['1/3', 'un tercio'], ['1/4', 'un cuarto'], ['3/4', 'tres cuartos']],
+      pista: 'El numerador dice cuántas partes tomamos y el denominador le da su nombre: medios, tercios, cuartos... En 3/4 son tres de esos cuartos.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para escribir la fracción que representa una pizza.',
+      pasos: ['Cuenta en cuántas partes iguales está partida la pizza', 'Escribe ese número abajo, como denominador',
+              'Cuenta cuántas partes están pintadas', 'Escribe ese número arriba, como numerador'],
+      pista: 'Primero se cuentan todas las partes de la pizza y se escribe el denominador; después se cuentan las pintadas y se escribe el numerador.' }
+  ],
+  'fracciones-3': [
+    { tipo: 'escrita', q: 'Escribe la fracción mayor: 2/6 o 5/6.', respuestas: ['5/6', '5 / 6'],
+      visual: `${svgBarra(2, 6)}<br>${svgBarra(5, 6)}`,
+      pista: 'Los dos denominadores son 6, así que los trozos son iguales. La fracción con más trozos, es decir, el numerador mayor, es la más grande.' },
+    { tipo: 'arrastrar', q: 'Todas estas pizzas están partidas en 8 trozos. Arrastra cada fracción a la caja correcta.',
+      zonas: [{ id: 'a', titulo: 'Menos de la mitad' }, { id: 'b', titulo: 'Más de la mitad' }],
+      fichas: [{ t: '1/8', zona: 'a' }, { t: '2/8', zona: 'a' }, { t: '3/8', zona: 'a' },
+               { t: '5/8', zona: 'b' }, { t: '6/8', zona: 'b' }, { t: '7/8', zona: 'b' }],
+      pista: 'La mitad de 8 trozos son 4 trozos (4/8). Si tomas menos de 4 es menos de la mitad y si tomas más de 4 es más de la mitad.' },
+    { tipo: 'ordenar', q: 'Ordena estas fracciones de la más pequeña a la más grande.',
+      pasos: ['1/6', '2/6', '4/6', '5/6'],
+      pista: 'Todas tienen denominador 6, así que solo debes comparar los numeradores. Empieza por la que tiene el numerador más pequeño.' }
+  ],
+  'problemas-1': [
+    { tipo: 'escrita', q: 'En una caja hay 15 galletas y te comes 6. ¿Cuántas galletas quedan?', respuestas: ['9', 'nueve'], numerico: true,
+      pista: '«Te comes» y «quedan» avisan de una resta. Parte de 15 y quita las 6 que te comes.' },
+    { tipo: 'relacionar', q: 'Une cada historia con la operación que la resuelve.',
+      pares: [['Tienes 5 y te regalan 3', '5 + 3'], ['Tienes 9 y regalas 4', '9 - 4'], ['Hay 6 y llegan 2 más', '6 + 2'], ['Hay 8 y se van 3', '8 - 3']],
+      pista: 'Busca la palabra que avisa: «te regalan» y «llegan más» juntan cantidades; «regalas» y «se van» las quitan.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada situación a la caja de la operación que necesita.',
+      zonas: [{ id: 's', titulo: 'Se suma' }, { id: 'r', titulo: 'Se resta' }],
+      fichas: [{ t: 'Ganas 3 canicas', zona: 's' }, { t: 'Llegan 4 amigos', zona: 's' }, { t: 'Compras 2 globos', zona: 's' },
+               { t: 'Te comes 2 galletas', zona: 'r' }, { t: 'Se van 5 patos', zona: 'r' }, { t: 'Regalas 3 colores', zona: 'r' }],
+      pista: 'Si la historia añade o junta cosas, se suma. Si quita, regala o se va algo, se resta.' }
+  ],
+  'problemas-2': [
+    { tipo: 'escrita', q: 'Una caja tiene 6 huevos. ¿Cuántos huevos hay en 3 cajas?', respuestas: ['18', 'dieciocho'], numerico: true,
+      pista: 'Son 3 grupos iguales de 6 huevos. Suma el 6 tres veces o salta de 6 en 6.' },
+    { tipo: 'arrastrar', q: 'Arrastra cada problema a la caja de la operación que necesita.',
+      zonas: [{ id: 'm', titulo: 'Se multiplica (grupos iguales)' }, { id: 'd', titulo: 'Se divide (repartir)' }],
+      fichas: [{ t: '4 filas de 5 sillas', zona: 'm' }, { t: '3 bolsas con 6 dulces cada una', zona: 'm' }, { t: '5 cajas con 2 lápices cada una', zona: 'm' },
+               { t: 'Repartes 12 galletas entre 3', zona: 'd' }, { t: 'Repartes 20 estrellas entre 4 niños', zona: 'd' }, { t: 'Compartes 10 uvas entre 2 amigos', zona: 'd' }],
+      pista: 'Si te dan varios grupos iguales y pides el total, multiplica. Si te piden repartir una cantidad entre varios, divide.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para resolver: «Hay 3 bolsas con 4 naranjas cada una. ¿Cuántas naranjas hay?»',
+      pasos: ['Veo que hay 3 bolsas iguales con 4 naranjas cada una', 'Como son grupos iguales, multiplico', 'Calculo 3 x 4 = 12', 'Respondo: hay 12 naranjas'],
+      pista: 'Primero entiendes la historia, luego eliges la operación, después calculas y, al final, respondes la pregunta.' }
+  ],
+  'problemas-3': [
+    { tipo: 'escrita', q: 'Marta tenía 20 pesos, compró un dulce de 8 pesos y una paleta de 5 pesos. ¿Cuántos pesos le quedan?', respuestas: ['7', 'siete'], numerico: true,
+      pista: 'Resta en dos pasos: primero quita los 8 pesos del dulce y, a lo que te quedó, quítale los 5 pesos de la paleta.' },
+    { tipo: 'ordenar', q: 'Ordena los pasos para resolver un problema de dos pasos.',
+      pasos: ['Lee el problema y busca sus dos partes', 'Resuelve la primera operación', 'Usa ese resultado para resolver la segunda operación', 'Escribe la respuesta final'],
+      pista: 'Se resuelve una parte a la vez: lo que obtienes en la primera operación lo necesitas para la segunda.' },
+    { tipo: 'relacionar', q: 'Une cada problema con las dos operaciones que necesita.',
+      pares: [['Tienes 5, ganas 3 y regalas 2', '5 + 3 - 2'], ['Hay 10, llegan 4 y se van 6', '10 + 4 - 6'],
+              ['Tienes 9, regalas 4 y luego regalas 2', '9 - 4 - 2'], ['2 bolsas con 5 dulces y se pierden 3', '2 x 5 - 3']],
+      pista: 'Escribe las operaciones en el mismo orden en que ocurren en la historia: «ganas» suma, «regalas» o «se van» resta y los grupos iguales se multiplican.' }
   ]
 };
 
@@ -572,6 +1026,66 @@ const visuales = {
   'multiplicaciones-3': [
     '5️⃣ &nbsp;✖️&nbsp; 4️⃣<br><small>Super multiplicador</small>',
     '3️⃣ &nbsp;✖️&nbsp; 4️⃣<br><small>Calculando filas y columnas</small>'
+  ],
+  'divisiones-1': [
+    '🍪🍪🍪🍪🍪🍪<br>👦 &nbsp; 👧<br><small>6 galletas para 2 niños: ¡a repartir!</small>',
+    '🍬🍬🍬🍬 &nbsp; 🍬🍬🍬🍬<br><small>Dos grupos con la misma cantidad</small>'
+  ],
+  'divisiones-2': [
+    '6️⃣ &nbsp;➗&nbsp; 2️⃣<br><small>Seis entre dos</small>',
+    '🔟 &nbsp;➗&nbsp; 5️⃣<br><small>Diez entre cinco</small>'
+  ],
+  'divisiones-3': [
+    '3️⃣ &nbsp;✖️&nbsp; 4️⃣ &nbsp;=&nbsp; 1️⃣2️⃣<br><small>La multiplicación te ayuda a dividir</small>',
+    '1️⃣2️⃣ &nbsp;➗&nbsp; 3️⃣ &nbsp;=&nbsp; 4️⃣<br><small>La división deshace la multiplicación</small>'
+  ],
+  'numeros-1': [
+    '1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣<br><small>Contamos de uno en uno</small>',
+    '🍎🍎🍎🍎🍎🍎<br><small>Un número por cada manzana</small>'
+  ],
+  'numeros-2': [
+    '9️⃣ &nbsp;&gt;&nbsp; 4️⃣<br><small>Nueve es mayor que cuatro</small>',
+    '2️⃣ &nbsp;&lt;&nbsp; 7️⃣<br><small>Dos es menor que siete</small>'
+  ],
+  'numeros-3': [
+    '2️⃣ 4️⃣ 6️⃣ 8️⃣<br><small>Números pares</small>',
+    '1️⃣ 3️⃣ 5️⃣ 7️⃣<br><small>Números impares</small>'
+  ],
+  'figuras-1': [
+    `${svgFigura('circulo')} ${svgFigura('cuadrado')} ${svgFigura('triangulo')} ${svgFigura('rectangulo')}<br><small>Círculo, cuadrado, triángulo y rectángulo</small>`,
+    '🚪 &nbsp; 📖 &nbsp; 🖼️<br><small>Rectángulos de todos los días</small>'
+  ],
+  'figuras-2': [
+    `${svgFigura('triangulo')} ${svgFigura('cuadrado')} ${svgFigura('pentagono')} ${svgFigura('hexagono')}<br><small>3, 4, 5 y 6 lados</small>`,
+    `${svgFigura('pentagono', 70)}<br><small>Un pentágono: 5 lados y 5 vértices</small>`
+  ],
+  'figuras-3': [
+    '⚽ &nbsp; 🎲 &nbsp; 🥫 &nbsp; 🍦<br><small>Esfera, cubo, cilindro y cono</small>',
+    '🎲<br><small>Un dado es un cubo</small>'
+  ],
+  'fracciones-1': [
+    `${svgFraccion(1, 2)} ${svgFraccion(1, 3)} ${svgFraccion(1, 4)}<br><small>Una pizza partida en partes iguales</small>`,
+    `${svgBarra(1, 4)}<br><small>Una barra de chocolate: 1 cuadrito de 4</small>`
+  ],
+  'fracciones-2': [
+    `${svgFraccion(3, 4)}<br><small>3 trozos de 4: la fracción es 3/4</small>`,
+    `${svgBarra(2, 6)}<br><small>2 cuadritos de 6: la fracción es 2/6</small>`
+  ],
+  'fracciones-3': [
+    `${svgBarra(2, 6)}<br>${svgBarra(5, 6)}<br><small>5/6 es mayor que 2/6</small>`,
+    `${svgFraccion(1, 2)} ${svgFraccion(1, 4)} ${svgFraccion(1, 8)}<br><small>Más trozos, trozos más pequeños</small>`
+  ],
+  'problemas-1': [
+    '🍎🍎🍎🍎🍎🍎🍎🍎 &nbsp;+&nbsp; 🍎🍎🍎🍎🍎<br><small>«En total» avisa de una suma</small>',
+    '🐥🐥🐥🐥🐥🐥<br>❌❌ &nbsp; Se van 2 &nbsp; ❌❌<br><small>«Quedan» avisa de una resta</small>'
+  ],
+  'problemas-2': [
+    '🍊🍊🍊 &nbsp; 🍊🍊🍊 &nbsp; 🍊🍊🍊 &nbsp; 🍊🍊🍊<br><small>4 bolsas con 3 naranjas: 4 x 3</small>',
+    '🍪🍪🍪🍪🍪🍪<br>👦 &nbsp; 👧 &nbsp; 🧒<br><small>Repartir en partes iguales: dividir</small>'
+  ],
+  'problemas-3': [
+    '5️⃣ &nbsp;➕&nbsp; 3️⃣ &nbsp;➖&nbsp; 2️⃣<br><small>Primero sumamos y después restamos</small>',
+    '🪜<br><small>Un escalón a la vez: una operación a la vez</small>'
   ]
 };
 
@@ -703,6 +1217,217 @@ const teoriaExtendida = {
       p: ['Los números que se multiplican se llaman factores y el resultado se llama producto. En 5 x 2 = 10, los factores son 5 y 2, y el producto es 10.',
           'Un truco: los resultados de la tabla del 5 siempre terminan en 0 o en 5.'],
       tip: 'Si no recuerdas una multiplicación, dibuja las filas o suma de forma repetida. ¡Siempre funciona!' }
+  ],
+  'divisiones-1': [
+    { t: 'Dividir es repartir', visual: true, p: ['@teoria',
+      'Para que sea un reparto justo, todos los grupos deben recibir la misma cantidad. En este curso solo repartiremos cantidades que se dividen justo, sin que sobre nada.'] },
+    { t: 'Paso a paso: repartir de uno en uno',
+      pasos: ['Cuenta cuántos objetos tienes para repartir.', 'Fíjate entre cuántos niños o grupos los vas a repartir.',
+              'Da un objeto a cada grupo, uno por uno, y repite hasta que se acaben.',
+              'Cuenta cuántos objetos tiene un grupo: esa es la cantidad que recibe cada uno.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 6 galletas entre 3 niños', visual: '🍪🍪🍪🍪🍪🍪<br>👦 &nbsp; 👧 &nbsp; 🧒',
+        lineas: ['Tengo 6 galletas y 3 niños.', 'Doy una galleta a cada niño y repito: primero 3 galletas y luego otras 3.',
+                 'Cada niño recibe 2 galletas.'] } },
+    { t: 'Dos ideas que te ayudarán',
+      p: ['Todos los grupos deben quedar con la misma cantidad; si no, no es una división.',
+          'Al repartir, cada grupo recibe menos objetos que el total, porque el total se divide en varias partes.'],
+      tip: 'Puedes dibujar los grupos o usar fichas para repartir. ¡Es más fácil verlo!' }
+  ],
+  'divisiones-2': [
+    { t: 'El signo ÷', visual: true, p: ['@teoria',
+      'Una división se escribe con tres partes: el total, el signo ÷ y el número de grupos. Después ponemos el signo = (igual) y el resultado. Por ejemplo, 8 ÷ 2 = 4 se lee «ocho entre dos es igual a cuatro».'] },
+    { t: 'De una historia a una división',
+      pasos: ['Lee la historia y busca cuántas cosas hay que repartir.',
+              'Busca entre cuántas personas o grupos se reparten: casi siempre aparece la palabra «entre».',
+              'Escribe la cantidad total, el signo ÷ y el número de grupos.',
+              'Calcula cuánto recibe cada uno y escríbelo después del signo =.'],
+      ejemplo: { titulo: 'Ejemplo resuelto', visual: '🍎🍎🍎🍎🍎🍎🍎🍎🍎<br>🧺 &nbsp; 🧺 &nbsp; 🧺',
+        lineas: ['Historia: «Reparto 9 manzanas entre 3 cestas».', '«Entre 3» significa 3 grupos, así que escribo 9 ÷ 3.',
+                 'Reparto de una en una: cada cesta recibe 3. Entonces 9 ÷ 3 = 3.'] } },
+    { t: 'Cuidado con el orden',
+      p: ['En la división el orden sí importa: primero va la cantidad que se reparte y después el número de grupos. 6 ÷ 2 da 3, pero 2 ÷ 6 no se puede repartir en partes enteras.'],
+      tip: 'Palabras que avisan de una división: «reparte», «entre», «en partes iguales» y «cada uno».' }
+  ],
+  'divisiones-3': [
+    { t: 'La división y la multiplicación son amigas', visual: true, p: ['@teoria',
+      'Mira: 3 grupos de 4 son 12 (3 x 4 = 12). Si ahora repartes esos 12 en 3 grupos, a cada grupo le tocan 4 (12 ÷ 3 = 4).'] },
+    { t: 'Paso a paso: dividir con las tablas',
+      pasos: ['Lee la división, por ejemplo 20 ÷ 4.', 'Piensa: ¿qué número multiplicado por 4 da 20?',
+              'Recuerda la tabla del 4 o salta de 4 en 4 hasta llegar a 20.', 'Cuenta cuántos saltos diste: ese número es el resultado.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 15 ÷ 3', visual: '3️⃣ &nbsp;✖️&nbsp; ❓ &nbsp;=&nbsp; 1️⃣5️⃣',
+        lineas: ['Busco qué número multiplicado por 3 da 15.', 'Salto de 3 en 3: 3, 6, 9, 12, 15. Son 5 saltos.',
+                 'Como 3 x 5 = 15, entonces 15 ÷ 3 = 5.'] } },
+    { t: 'Comprobar con una multiplicación',
+      p: ['Para saber si tu división está bien, multiplica el resultado por el número entre el que dividiste: debes volver al número del principio.',
+          'Por ejemplo, 12 ÷ 4 = 3, y lo comprobamos con 3 x 4 = 12.'],
+      tip: 'Dividir entre 1 deja el número igual (7 ÷ 1 = 7) y dividir un número entre sí mismo siempre da 1 (7 ÷ 7 = 1).' }
+  ],
+  'numeros-1': [
+    { t: 'Contar es poner un número a cada objeto', visual: true, p: ['@teoria',
+      'Los números que usamos para contar empiezan en 1 y no nos saltamos ninguno.'] },
+    { t: 'Paso a paso: contar objetos',
+      pasos: ['Señala el primer objeto y di «uno».', 'Señala el siguiente objeto y di el número que sigue.',
+              'Sigue así sin saltarte ni repetir ningún objeto.', 'El último número que dijiste es la cantidad total.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: contar patitos', visual: '🐥🐥🐥🐥🐥',
+        lineas: ['Señalo el primer patito: 1.', 'Sigo con los demás: 2, 3, 4, 5.', 'El último número fue 5, así que hay 5 patitos.'] } },
+    { t: 'Los nombres de los números',
+      p: ['Cada número tiene su nombre: 1 uno, 2 dos, 3 tres, 4 cuatro, 5 cinco, 6 seis, 7 siete, 8 ocho, 9 nueve y 10 diez.',
+          'Después del 10 siguen once, doce, trece, catorce, quince, dieciséis, diecisiete, dieciocho, diecinueve y veinte.'],
+      tip: 'Si te pierdes al contar, empieza otra vez y ve tachando con el dedo cada objeto que ya contaste.' }
+  ],
+  'numeros-2': [
+    { t: 'Mayor, menor e igual', visual: true, p: ['@teoria',
+      'Si dos números tienen la misma cantidad, son iguales. Si uno tiene más que el otro, ese es el mayor.'] },
+    { t: 'Paso a paso: comparar dos números',
+      pasos: ['Mira cuántas cifras tiene cada número: el que tenga más cifras es el mayor.',
+              'Si tienen las mismas cifras, compara primero las decenas (la cifra de la izquierda).',
+              'Si las decenas son iguales, compara las unidades.', 'Escribe el signo: la boca se abre hacia el número mayor.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 27 y 24', visual: '2️⃣7️⃣ &nbsp;❓&nbsp; 2️⃣4️⃣',
+        lineas: ['Los dos tienen 2 decenas, así que empatan en las decenas.', 'Comparo las unidades: 7 es más que 4.',
+                 'Entonces 27 es mayor que 24, y se escribe 27 &gt; 24.'] } },
+    { t: 'Los signos &gt; y &lt;',
+      p: ['El signo &gt; significa «mayor que», el signo &lt; significa «menor que» y el signo = significa «igual a».',
+          'Truco: imagina que el signo es la boca de un cocodrilo hambriento. ¡Siempre se quiere comer al número más grande!'],
+      tip: '8 &gt; 5 se lee «ocho es mayor que cinco» y 5 &lt; 8 se lee «cinco es menor que ocho».' }
+  ],
+  'numeros-3': [
+    { t: 'Pares e impares', visual: true, p: ['@teoria',
+      'Prueba con tus juguetes: si los puedes poner en parejas y no sobra ninguno, el número es par. Si sobra uno solito, es impar.'] },
+    { t: 'Paso a paso: saber si un número es par',
+      pasos: ['Mira el número y fíjate en su última cifra.', 'Compara esa cifra con 0, 2, 4, 6 y 8.',
+              'Si coincide con alguna, el número es par.', 'Si no coincide con ninguna, el número es impar.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 24 y 35', visual: '2️⃣4️⃣ &nbsp; 3️⃣5️⃣',
+        lineas: ['El 24 termina en 4. El 4 está en la lista de los pares, así que 24 es par.',
+                 'El 35 termina en 5. El 5 no está en la lista, así que 35 es impar.'] } },
+    { t: 'Contar de 2 en 2',
+      p: ['Si cuentas de 2 en 2 empezando en 2, obtienes los números pares: 2, 4, 6, 8, 10... Si empiezas en 1, obtienes los impares: 1, 3, 5, 7, 9...',
+          'Los pares y los impares se van alternando: un par, un impar, un par, un impar...'],
+      tip: 'Si sumas dos números pares, el resultado siempre es par. ¡Pruébalo con 4 + 6!' }
+  ],
+  'figuras-1': [
+    { t: 'Las figuras están en todas partes', visual: true, p: ['@teoria',
+      'A estas figuras planas se les llama figuras geométricas. Las puedes dibujar sobre una hoja de papel.'] },
+    { t: 'Paso a paso: reconocer una figura',
+      pasos: ['Mira la figura: ¿es redonda o tiene lados rectos?', 'Si es redonda y no tiene esquinas, es un círculo.',
+              'Si tiene lados rectos, cuéntalos.',
+              'Con 3 lados es un triángulo. Con 4 lados iguales es un cuadrado. Con 4 lados, dos largos y dos cortos, es un rectángulo.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: una puerta', visual: svgFigura('rectangulo'),
+        lineas: ['Una puerta no es redonda: tiene lados rectos.', 'Tiene 4 lados: dos largos y dos cortos.', 'Entonces la puerta tiene forma de rectángulo.'] } },
+    { t: 'Cuadrado y rectángulo: ¿en qué se parecen?',
+      p: ['Los dos tienen 4 lados y 4 esquinas. La diferencia es que el cuadrado tiene sus 4 lados iguales y el rectángulo tiene lados largos y lados cortos.'],
+      tip: 'Busca figuras a tu alrededor: una moneda es un círculo, una baldosa puede ser un cuadrado y una puerta es un rectángulo.' }
+  ],
+  'figuras-2': [
+    { t: 'Lados y vértices', visual: true, p: ['@teoria',
+      'En cada figura de lados rectos hay tantos vértices como lados. Por eso, si cuentas los lados, también sabes cuántas esquinas tiene.'] },
+    { t: 'Paso a paso: contar lados',
+      pasos: ['Elige una esquina como punto de partida y márcala con tu dedo.', 'Sigue el borde de la figura y cuenta cada lado que recorras.',
+              'Cuando vuelvas al punto de partida, deja de contar.', 'El último número es la cantidad de lados, y también de vértices.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: un pentágono', visual: svgFigura('pentagono', 64),
+        lineas: ['Empiezo en una esquina y recorro el borde.', 'Cuento los lados: 1, 2, 3, 4, 5.', 'Tiene 5 lados y 5 vértices, por eso se llama pentágono.'] } },
+    { t: 'Los nombres de las figuras',
+      p: ['El triángulo tiene 3 lados, el cuadrado y el rectángulo tienen 4, el pentágono tiene 5 y el hexágono tiene 6.',
+          'Mientras más lados tiene una figura, más se parece a un círculo.'],
+      tip: 'Las abejas construyen sus panales con hexágonos: ¡cada celdita tiene 6 lados!' }
+  ],
+  'figuras-3': [
+    { t: 'Figuras que se pueden tocar', visual: true, p: ['@teoria',
+      'Las figuras planas solo tienen largo y ancho. Los cuerpos geométricos tienen además altura, por eso ocupan espacio y puedes sostenerlos con las manos.'] },
+    { t: 'Paso a paso: reconocer un cuerpo',
+      pasos: ['Toca el objeto y fíjate si tiene partes planas o es todo curvo.', 'Si es todo curvo, como una pelota, es una esfera.',
+              'Si tiene caras cuadradas, como un dado, es un cubo.',
+              'Si tiene dos círculos planos y un lado curvo, es un cilindro. Si termina en punta, es un cono.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: una lata de atún', visual: '🥫',
+        lineas: ['La lata tiene un lado curvo.', 'Arriba y abajo tiene dos círculos planos.', 'Entonces es un cilindro.'] } },
+    { t: 'Las caras de un cuerpo',
+      p: ['Las superficies planas de un cuerpo se llaman caras. El cubo tiene 6 caras y todas son cuadrados iguales.',
+          'La esfera no tiene caras planas: ¡es toda curva y no tiene esquinas!'],
+      tip: 'Mira un dado y cuenta sus caras: la de arriba, la de abajo y las cuatro de los lados.' }
+  ],
+  'fracciones-1': [
+    { t: 'Partes iguales de un entero', visual: true, p: ['@teoria',
+      'Para que sea una fracción, todas las partes deben ser iguales. Si un trozo es más grande que otro, ya no podemos escribirlo como fracción.'] },
+    { t: 'Paso a paso: escribir una fracción',
+      pasos: ['Mira el entero (una pizza o una barra de chocolate) y cuenta en cuántas partes iguales está partido.',
+              'Escribe ese número abajo, debajo de una raya.', 'Cuenta cuántas partes tomas o están pintadas.',
+              'Escribe ese número arriba de la raya.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 1 trozo de pizza', visual: svgFraccion(1, 4),
+        lineas: ['La pizza está partida en 4 trozos iguales.', 'Me como 1 trozo.', 'La fracción es 1/4 y se lee «un cuarto».'] } },
+    { t: 'Fracciones con nombre propio',
+      p: ['Algunas fracciones tienen un nombre especial: 1/2 es «un medio» o «la mitad», 1/3 es «un tercio» y 1/4 es «un cuarto».',
+          'Si juntas todos los trozos de la pizza, vuelves a tener la pizza completa.'],
+      tip: 'Una pizza bien repartida siempre tiene trozos del mismo tamaño. ¡Eso es lo que hace justa a una fracción!' }
+  ],
+  'fracciones-2': [
+    { t: 'Numerador y denominador', visual: true, p: ['@teoria',
+      'Truco para no confundirte: la palabra «denominador» empieza con D, como «debajo». El numerador es el que queda arriba.'] },
+    { t: 'Paso a paso: leer una fracción',
+      pasos: ['Mira el número de abajo: es el denominador y dice en cuántas partes iguales se partió el entero.',
+              'Mira el número de arriba: es el numerador y dice cuántas partes tomamos.',
+              'Lee primero el numerador y después el nombre de las partes: tres cuartos, dos quintos...',
+              'Comprueba dibujando el entero y pintando las partes que indica el numerador.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 3/4', visual: svgFraccion(3, 4),
+        lineas: ['El denominador es 4: la pizza está partida en 4 trozos iguales.', 'El numerador es 3: comimos 3 trozos.', 'Se lee «tres cuartos».'] } },
+    { t: 'Cada fracción se lee con su nombre',
+      p: ['Según el denominador, las partes se llaman: 2 medios, 3 tercios, 4 cuartos, 5 quintos, 6 sextos y 8 octavos.',
+          'Por eso 5/8 se lee «cinco octavos»: son 5 trozos de una pizza partida en 8.'],
+      tip: 'Si el numerador es igual al denominador, tomaste todas las partes: ¡es el entero completo!' }
+  ],
+  'fracciones-3': [
+    { t: 'Comparar fracciones', visual: true, p: ['@teoria',
+      'Piensa en una barra de chocolate partida en cuadritos iguales: la fracción mayor es la que se come más cuadritos.'] },
+    { t: 'Paso a paso: comparar con el mismo denominador',
+      pasos: ['Mira los denominadores: si son iguales, los trozos tienen el mismo tamaño.', 'Compara los numeradores.',
+              'La fracción con el numerador más grande es la mayor.', 'Escribe el signo &gt; o &lt; para comparar.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 2/6 y 5/6', visual: `${svgBarra(2, 6)}<br>${svgBarra(5, 6)}`,
+        lineas: ['Los dos denominadores son 6: los trozos son iguales.', 'Comparo los numeradores: 5 es más que 2.', 'Entonces 5/6 es mayor que 2/6 y se escribe 5/6 &gt; 2/6.'] } },
+    { t: 'Trozos más grandes y más pequeños',
+      p: ['Si partes el entero en más trozos, cada trozo es más pequeño. Por eso 1/8 es menor que 1/4: los octavos son trozos más chiquitos que los cuartos.',
+          'La mitad es muy útil para comparar: en una pizza de 8 trozos, 4/8 es la mitad.'],
+      tip: 'Si el numerador es menor que la mitad del denominador, la fracción es menor que 1/2.' }
+  ],
+  'problemas-1': [
+    { t: 'Un problema es una historia con una pregunta', visual: true, p: ['@teoria',
+      'Los datos son los números de la historia y la pregunta nos dice qué tenemos que averiguar.'] },
+    { t: 'Paso a paso: resolver un problema',
+      pasos: ['Lee el problema con calma, una o dos veces.', 'Busca los datos (los números) y la pregunta.',
+              'Decide la operación: ¿se junta o se quita algo?', 'Calcula y escribe la respuesta con una frase.',
+              'Comprueba que tu respuesta contesta lo que preguntaban.'],
+      ejemplo: { titulo: 'Ejemplo resuelto', visual: '🐥🐥🐥🐥🐥🐥🐥🐥🐥<br>❌❌❌ se van 3',
+        lineas: ['Problema: «Hay 9 patitos y se van 3. ¿Cuántos quedan?».', '«Se van» y «quedan» avisan de una resta, así que escribo 9 - 3.',
+                 'Cuento hacia atrás desde 9: 8, 7, 6. Quedan 6 patitos.'] } },
+    { t: 'Palabras que te ayudan',
+      p: ['Para sumar: «en total», «juntos», «ganas», «llegan», «te regalan», «compras».',
+          'Para restar: «quedan», «se van», «regalas», «te comes», «pierdes», «se rompen».'],
+      tip: 'Cuando termines, lee tu respuesta dentro de la historia. Si tiene sentido, ¡lo hiciste bien!' }
+  ],
+  'problemas-2': [
+    { t: 'Grupos iguales y repartos', visual: true, p: ['@teoria',
+      'Fíjate en la historia: si todos los grupos tienen la misma cantidad y pide el total, multiplica; si hay que repartir, divide.'] },
+    { t: 'Paso a paso: multiplicar o dividir',
+      pasos: ['Lee la historia y busca si habla de grupos iguales o de un reparto.',
+              'Si son grupos iguales y quieres el total, multiplica: grupos x cantidad en cada grupo.',
+              'Si repartes entre varios, divide: total ÷ número de grupos.', 'Calcula y responde con una frase.'],
+      ejemplo: { titulo: 'Ejemplo resuelto', visual: '🍬🍬🍬🍬<br>🍬🍬🍬🍬<br>🍬🍬🍬🍬',
+        lineas: ['Problema: «Hay 3 platos con 4 dulces cada uno. ¿Cuántos dulces hay?».', 'Son grupos iguales y pide el total, así que multiplico: 3 x 4.',
+                 'Sumo 4 + 4 + 4 = 12. Hay 12 dulces.'] } },
+    { t: 'Comprueba con la operación contraria',
+      p: ['La multiplicación y la división son operaciones contrarias. Si 12 ÷ 3 = 4, lo puedes comprobar con 4 x 3 = 12.',
+          'Palabras que ayudan: «cada uno», «en cada», «grupos de» suelen avisar de multiplicar; «entre», «reparte» y «por igual» avisan de dividir.'],
+      tip: 'Si no estás seguro, dibuja los grupos o los objetos. ¡Un dibujo sencillo ayuda mucho!' }
+  ],
+  'problemas-3': [
+    { t: 'Problemas de dos pasos', visual: true, p: ['@teoria',
+      'Para saber si un problema tiene dos pasos, busca si la historia cuenta dos cosas que pasan una después de la otra.'] },
+    { t: 'Paso a paso: resolver en dos partes',
+      pasos: ['Lee el problema y marca las dos cosas que suceden.', 'Resuelve la primera operación y anota su resultado.',
+              'Usa ese resultado como punto de partida de la segunda operación.', 'El último resultado es la respuesta del problema.'],
+      ejemplo: { titulo: 'Ejemplo resuelto: 6 + 4 - 3', visual: '🍎🍎🍎🍎🍎🍎 &nbsp;+&nbsp; 🍎🍎🍎🍎 &nbsp;➖&nbsp; 3️⃣',
+        lineas: ['Problema: «Tengo 6 manzanas, me regalan 4 y me como 3. ¿Cuántas quedan?».', 'Primero sumo: 6 + 4 = 10.', 'Después resto: 10 - 3 = 7. Me quedan 7 manzanas.'] } },
+    { t: 'No te saltes ningún paso',
+      p: ['Escribe el resultado de cada paso para no perderte. En el ejemplo, primero apuntas 10 y después lo usas para restar.',
+          'También hay problemas de dos pasos que mezclan operaciones distintas, como multiplicar y después restar.'],
+      tip: 'Si te atoras, resuelve solo la primera parte y detente: a veces la segunda parte se ve mucho más fácil.' }
   ]
 };
 
@@ -716,7 +1441,22 @@ const conexiones = {
   'restas-3': 'Los ejercicios usan la estrategia de quitar en partes y la resta de decenas completas. Antes de responder, decide cómo separar el número que quitas.',
   'multiplicaciones-1': 'En los ejercicios cambiarás sumas repetidas por frases con «veces» y calcularás resultados. Cuenta cuántas veces se repite el número: esa es la clave.',
   'multiplicaciones-2': 'Practicarás el doble de un número y la tabla del 2. Usa los saltos de 2 en 2 y la idea de sumar el número consigo mismo.',
-  'multiplicaciones-3': 'Vas a pasar de filas a multiplicaciones y a calcular resultados de varias tablas. Imagina las filas o suma de forma repetida.'
+  'multiplicaciones-3': 'Vas a pasar de filas a multiplicaciones y a calcular resultados de varias tablas. Imagina las filas o suma de forma repetida.',
+  'divisiones-1': 'En los ejercicios repartirás objetos en partes iguales y calcularás cuánto recibe cada uno. Reparte de uno en uno, como en el ejemplo de las galletas.',
+  'divisiones-2': 'Aquí convertirás historias en divisiones y ordenarás los pasos para hacerlo. Fíjate en la palabra «entre»: te dice cuántos grupos hay.',
+  'divisiones-3': 'Los ejercicios usan las tablas de multiplicar para dividir y para comprobar resultados. Recuerda el ejemplo de 15 ÷ 3.',
+  'numeros-1': 'En los ejercicios contarás objetos, leerás los nombres de los números y los clasificarás. Cuenta de uno en uno y no te saltes ninguno.',
+  'numeros-2': 'Aquí compararás números con los signos &gt; y &lt; y ordenarás una lista de menor a mayor. Compara primero las decenas y después las unidades.',
+  'numeros-3': 'Vas a reconocer números pares e impares, seguir secuencias de 2 en 2 y ordenar los pasos para clasificar un número. Fíjate siempre en la última cifra.',
+  'figuras-1': 'En los ejercicios reconocerás círculos, cuadrados, triángulos y rectángulos, y los clasificarás según tengan esquinas o no. Fíjate si la figura es redonda o tiene lados rectos.',
+  'figuras-2': 'Aquí contarás lados y vértices y ordenarás figuras de menos a más lados. Recuerda que en cada figura hay tantos vértices como lados.',
+  'figuras-3': 'Vas a reconocer esfera, cubo, cilindro y cono en objetos de todos los días y a ordenar los pasos para reconocerlos. Toca el objeto en tu mente: ¿es plano o curvo?',
+  'fracciones-1': 'En los ejercicios escribirás fracciones de pizzas y chocolates y las clasificarás según en cuántas partes está partido el entero. Cuenta primero todos los trozos iguales.',
+  'fracciones-2': 'Aquí leerás fracciones, distinguirás el numerador del denominador y ordenarás los pasos para escribirlas. Recuerda: el denominador va debajo.',
+  'fracciones-3': 'Vas a comparar fracciones con el mismo denominador y a ordenarlas de menor a mayor. Fíjate en los numeradores y recuerda la mitad como ayuda.',
+  'problemas-1': 'En los ejercicios convertirás historias en sumas y restas y clasificarás las palabras pista. Busca siempre lo que se junta o lo que se quita.',
+  'problemas-2': 'Aquí decidirás si un problema se resuelve multiplicando o dividiendo y ordenarás los pasos para hacerlo. Fíjate si hay grupos iguales o un reparto.',
+  'problemas-3': 'Vas a resolver problemas en dos partes y a unirlos con sus operaciones. Resuelve un paso a la vez y usa el primer resultado para el segundo.'
 };
 
 // ========== Abrir cursos y lista de lecciones ==========
@@ -791,9 +1531,9 @@ let sesion = null;
 const mezclar = (lista) => lista.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(p => p[1]);
 
 // ---------- Datos auxiliares de los ejercicios ----------
-const NOMBRES_CURSO = { sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones' };
-// Cada lección se registra en el nodo de conocimiento de la base de datos (nodo_conocimiento: 1-3 sumas, 4-6 restas, 7-9 multiplicaciones)
-const NODO_BASE = { sumas: 0, restas: 3, multiplicaciones: 6 };
+const NOMBRES_CURSO = { sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones', numeros: 'Los Números', figuras: 'Figuras Geométricas', fracciones: 'Fracciones', problemas: 'Problemas' };
+// Cada lección se registra en el nodo de conocimiento de la base de datos (nodo_conocimiento: 1-3 sumas, 4-6 restas, 7-9 multiplicaciones, 10-12 divisiones, 13-15 números, 16-18 figuras, 19-21 fracciones, 22-24 problemas)
+const NODO_BASE = { sumas: 0, restas: 3, multiplicaciones: 6, divisiones: 9, numeros: 12, figuras: 15, fracciones: 18, problemas: 21 };
 const idNodo = (clave, leccionId) => NODO_BASE[clave] + leccionId;
 
 const ETIQUETAS_TIPO = {
@@ -814,8 +1554,8 @@ const INSTRUCCIONES = {
 function preguntasDeLeccion(clave, indice) {
   const lec = cursosData[clave].lecciones[indice];
   const id = `${clave}-${lec.id}`;
-  const mc = [[lec.reto, lec.opciones, lec.correcta, lec.pista || pistasReto[id]], ...(ejerciciosExtra[id] || [])]
-    .map(([q, o, c, pista]) => ({ tipo: 'opcion', q, o: o.map((t, i) => ({ t, ok: i === c })), pista }));
+  const mc = [[lec.reto, lec.opciones, lec.correcta, lec.pista || pistasReto[id], lec.visual], ...(ejerciciosExtra[id] || [])]
+    .map(([q, o, c, pista, visual]) => ({ tipo: 'opcion', q, o: o.map((t, i) => ({ t, ok: i === c })), pista, visual }));
   const inter = (ejerciciosInteractivos[id] || []).map(e => ({ ...e }));
   const lista = [];
   for (let i = 0; i < Math.max(mc.length, inter.length); i++) {
@@ -963,6 +1703,8 @@ function obtenerVisualParaPregunta(q, claveCurso) {
   }
 
   const texto = q.q.toLowerCase();
+  // Los números, las figuras, las fracciones y los problemas no usan dibujos automáticos: llevan su propio visual (q.visual) cuando lo necesitan
+  if (['numeros', 'figuras', 'fracciones', 'problemas'].some(c => claveCurso.includes(c))) return '';
   const numeros = texto.match(/\d+/g);
   
   if (!numeros || numeros.length === 0) return '';
@@ -998,7 +1740,22 @@ function obtenerVisualParaPregunta(q, claveCurso) {
   if (!emoji) {
     if (claveCurso.includes('restas')) emoji = '🎈';
     else if (claveCurso.includes('multiplicaciones')) emoji = '🟦';
+    else if (claveCurso.includes('divisiones')) emoji = '🍪';
     else emoji = '🍎';
+  }
+
+  // --- CASO DIVISIONES ---
+  if (claveCurso.includes('divisiones')) {
+    const reparto = texto.match(/(\d+)\s*÷\s*(\d+)/) || texto.match(/(\d+)\D+?entre\s+(\d+)/);
+    if (!reparto) return '';
+    const total = parseInt(reparto[1]);
+    const grupos = parseInt(reparto[2]);
+    // Se dibuja solo lo que se reparte (no el resultado) y se evita un dibujo demasiado largo
+    if (total > 20) return '';
+    return `<div class="visual-leccion" aria-hidden="true" style="font-size: 1.6rem; text-align: center; padding: 0.8rem;">
+              ${emoji.repeat(total)}
+              <br><small style="font-size: 0.9rem; color: var(--texto-secundario);">Repartimos ${total} en ${grupos} grupos iguales</small>
+            </div>`;
   }
 
   // --- CASO SUMAS ---

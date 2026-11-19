@@ -1788,6 +1788,17 @@ body.alto-contraste.tema-oscuro .mixta-badge { background: #000; color: #fff; bo
 .teoria-ejemplo strong { display: block; font-size: 1.15rem; color: #1f55c4; margin-bottom: 0.5rem; }
 .teoria-ejemplo p { font-size: 1.1rem; font-weight: 500; line-height: 1.5; color: #222; }
 .teoria-ejemplo-visual { font-size: 1.7rem; line-height: 1.5; text-align: center; margin: 0.4rem 0 0.7rem; word-break: break-word; }
+
+/* Dibujos de figuras geométricas (curso "Figuras Geométricas") */
+.visual-leccion .figura-svg,
+.teoria-ejemplo-visual .figura-svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0.15rem 0.3rem;
+  max-width: 28vw;
+  height: auto;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.12));
+}
 .teoria-lista { margin: 0 0 1.2rem 1.4rem; font-size: 1.15rem; font-weight: 600; color: #333; line-height: 1.7; }
 .teoria-ojo {
   background: #fff9db;

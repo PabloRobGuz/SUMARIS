@@ -6,8 +6,6 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors());
-// 👇 NUEVO: Le dice a Express que muestre los archivos de tu carpeta actual
-app.use(express.static(__dirname)); 
 
 // Configuración de la conexión a la Base de Datos MySQL
 const dbConfig = {
@@ -234,4 +232,3 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Servidor de SUMARIS corriendo en http://localhost:${PORT}`);
 });
-
