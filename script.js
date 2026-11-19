@@ -7,9 +7,8 @@ const pantallaAuth = document.getElementById('pantalla-auth');
 const interfazPrincipal = document.getElementById('interfaz-principal');
 const errorLogin = document.getElementById('error-login');
 const nombreMostrado = document.getElementById('nombre-mostrado');
-const saludoTitulo = document.getElementById('saludo-titulo');
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api'; // 👈 Al quitar el "localhost", el navegador usará el mismo dominio desde el que se abrió la página
 
 // ========== Referencias del Test de Diagnóstico ==========
 const pantallaTest = document.getElementById('pantalla-test');
