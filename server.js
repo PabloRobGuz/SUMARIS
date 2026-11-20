@@ -2,6 +2,8 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const cors = require('cors');
+const motor = require('./motor-adaptativo');
+const motorDb = require('./motor-db');
 
 const app = express();
 app.use(express.json());
@@ -227,8 +229,75 @@ app.post('/api/registrar-intento', async (req, res) =>{
     }
 });
 
+// ==============================================================
+// MOTOR ADAPTATIVO: EVALUAR UNA SESIÓN Y RECOMENDAR LA RUTA
+// ==============================================================
+// Cuerpo esperado (se aceptan también los nombres usuario_id / nodo_id / pistas_usadas):
+// { id_usuario, id_nodo, aciertos, errores, tiempo_invertido_segundos, pistas_solicitadas, completada?, origen? }
+app.post('/api/evaluar-sesion', async (req, res) => {
+    const entrada = motor.normalizarIntento(req.body);
+    if (!entrada.ok) {
+        return res.status(400).json({ mensaje: entrada.error });
+    }
+
+    let connection;
+    try {
+        connection = await mysql.createConnection(dbConfig);
+        const resultado = await motorDb.evaluarSesion(connection, entrada.valor);
+        res.json({ mensaje: 'Sesión evaluada correctamente', ...resultado });
+    } catch (error) {
+        manejarErrorMotor(error, res, 'evaluar la sesión');
+    } finally {
+        if (connection) await connection.end().catch(() => {});
+    }
+});
+
+// ==============================================================
+// MOTOR ADAPTATIVO: ESTADO DEL GRAFO DE UN ESTUDIANTE
+// ==============================================================
+app.get('/api/ruta/:id_usuario', async (req, res) => {
+    const idUsuario = Number(req.params.id_usuario);
+    if (!Number.isInteger(idUsuario) || idUsuario < 1) {
+        return res.status(400).json({ mensaje: 'Usuario inválido.' });
+    }
+
+    let connection;
+    try {
+        connection = await mysql.createConnection(dbConfig);
+        const ruta = await motorDb.obtenerRuta(connection, idUsuario);
+        res.json({ id_usuario: idUsuario, ...ruta });
+    } catch (error) {
+        manejarErrorMotor(error, res, 'consultar la ruta de aprendizaje');
+    } finally {
+        if (connection) await connection.end().catch(() => {});
+    }
+});
+
+function manejarErrorMotor(error, res, accion) {
+    if (error.estadoHttp) {
+        return res.status(error.estadoHttp).json({ mensaje: error.message });
+    }
+    if (error.code === 'ER_NO_SUCH_TABLE') {
+        console.error('Faltan las tablas del motor adaptativo. Ejecuta motor_adaptativo.sql.', error.message);
+        return res.status(503).json({ mensaje: 'El motor adaptativo no está instalado en la base de datos (falta ejecutar motor_adaptativo.sql).' });
+    }
+    console.error(`Error al ${accion}:`, error);
+    res.status(500).json({ mensaje: `Error interno del servidor al ${accion}.` });
+}
+
 // Iniciar servidor en el puerto 3000
 const PORT = 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Servidor de SUMARIS corriendo en http://localhost:${PORT}`);
+
+    // Comprobación del grafo de conocimiento (no detiene el servidor si algo falla)
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        const revision = await motorDb.verificarGrafo(connection);
+        await connection.end();
+        if (revision.valido) console.log('Motor adaptativo: grafo de conocimiento válido.');
+        else console.warn('Motor adaptativo: problemas en el grafo ->', revision.problemas.join(' | '));
+    } catch (error) {
+        console.warn('Motor adaptativo: no se pudo verificar el grafo (¿ejecutaste motor_adaptativo.sql?).', error.code || error.message);
+    }
 });

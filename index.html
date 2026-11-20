@@ -103,6 +103,19 @@
         <p>Elige un tema para seguir aprendiendo</p>
       </section>
 
+      <!-- ===== RUTA DE SUMI (recomendación del motor adaptativo) ===== -->
+      <section class="ruta-sumi" id="ruta-sumi" aria-labelledby="ruta-sumi-titulo">
+        <div class="sumi-avatar" id="ruta-sumi-avatar" aria-hidden="true"></div>
+        <div class="ruta-sumi-texto">
+          <h3 id="ruta-sumi-titulo">La ruta de Sumi</h3>
+          <p id="ruta-sumi-mensaje" aria-live="polite">Sumi está preparando tu ruta…</p>
+          <div class="ruta-sumi-acciones">
+            <button type="button" class="btn-ruta btn-ruta-principal" id="ruta-sumi-ir" hidden>Ir ahora</button>
+            <button type="button" class="btn-ruta" id="ruta-sumi-mapa">🗺️ Ver mi mapa</button>
+          </div>
+        </div>
+      </section>
+
       <!-- ===== PRÁCTICA MIXTA (aparte de los módulos) ===== -->
       <section class="practica-mixta" aria-labelledby="titulo-practica-mixta">
         <button type="button" class="tarjeta-mixta bloqueada" id="btn-practica-mixta" aria-disabled="true">
@@ -188,6 +201,24 @@
       <div class="lista-lecciones" id="contenedor-lista-lecciones">
         <!-- Las 3 lecciones se inyectan dinámicamente o se muestran aquí -->
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MAPA DE APRENDIZAJE (GRAFO DE NODOS) ================= -->
+  <div id="pantalla-mapa" class="pantalla-modal" role="dialog" aria-modal="true" aria-labelledby="titulo-mapa">
+    <div class="contenido-modal contenido-mapa">
+      <button class="btn-cerrar-modal" id="cerrar-mapa" aria-label="Cerrar">✖</button>
+      <h2 id="titulo-mapa">Mi mapa de aprendizaje</h2>
+      <p id="desc-mapa">Cada lección se desbloquea cuando dominas la que la precede. Toca una para ver los detalles.</p>
+      <div class="mapa-contenedor" id="mapa-contenedor"></div>
+      <div class="mapa-detalle" id="mapa-detalle" aria-live="polite"></div>
+      <ul class="mapa-leyenda" aria-label="Leyenda del mapa">
+        <li><span class="leyenda-punto est-bloqueado">🔒</span> Bloqueada</li>
+        <li><span class="leyenda-punto est-disponible">▶</span> Disponible</li>
+        <li><span class="leyenda-punto est-proceso">…</span> En proceso</li>
+        <li><span class="leyenda-punto est-refuerzo">!</span> Necesita refuerzo</li>
+        <li><span class="leyenda-punto est-dominado">✔</span> Dominada</li>
+      </ul>
     </div>
   </div>
 

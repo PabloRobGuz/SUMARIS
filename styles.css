@@ -2113,3 +2113,249 @@ body.alto-contraste.tema-oscuro .ord-hueco { border-color: #fff; }
 .config-barra { background: linear-gradient(135deg, #2457c9 0%, #3a86ff 100%); }
 .config-volver { color: #1f55c4; }
 body.alto-contraste .config-barra { background: #0b2a6b; }
+
+/* ================================================== */
+/* ========== MOTOR ADAPTATIVO · SUMI Y MAPA ======== */
+/* ================================================== */
+
+/* ---------- Sumi (mascota) ---------- */
+.sumi { width: 100%; height: 100%; display: block; overflow: visible; }
+.sumi-feliz, .sumi-anima { animation: sumiRebote 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+.sumi-celebra { animation: sumiSalto 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
+.sumi-piensa { animation: sumiBalanceo 3s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes sumiRebote { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes sumiSalto { 0%, 100% { transform: translateY(0) rotate(0); } 30% { transform: translateY(-12px) rotate(-4deg); } 60% { transform: translateY(-4px) rotate(4deg); } }
+@keyframes sumiBalanceo { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) { .sumi { animation: none !important; } }
+
+.sumi-avatar { flex: 0 0 auto; width: 86px; height: 90px; }
+
+/* ---------- Tarjeta «La ruta de Sumi» ---------- */
+.ruta-sumi {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  padding: 1rem 1.4rem;
+  background: #ffffff;
+  border: 4px solid #ffba08;
+  border-radius: 28px;
+  box-shadow: 0 10px 0 #ffba08;
+  text-align: left;
+}
+.ruta-sumi-texto { flex: 1; min-width: 0; }
+.ruta-sumi h3 { font-size: 1.25rem; font-weight: 700; color: #6b4300; margin-bottom: 0.2rem; }
+.ruta-sumi p { font-size: 1.05rem; font-weight: 500; color: #333; line-height: 1.4; }
+.ruta-sumi-acciones { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.7rem; }
+.ruta-sumi-acciones [hidden] { display: none; }
+
+.btn-ruta, .btn-sumi {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.55rem 1.1rem;
+  border-radius: 16px;
+  cursor: pointer;
+  border: 3px solid #3a86ff;
+  background: #ffffff;
+  color: #1f55c4;
+  box-shadow: 0 4px 0 #3a86ff;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.btn-ruta-principal, .btn-sumi { background: #1f55c4; border-color: #023e8a; color: #ffffff; box-shadow: 0 4px 0 #023e8a; }
+.btn-ruta:hover, .btn-sumi:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.btn-ruta:active, .btn-sumi:active { transform: translateY(3px); box-shadow: 0 0 0 transparent; }
+
+/* ---------- Panel de Sumi en las pantallas finales ---------- */
+.sumi-slot { width: 100%; max-width: 580px; margin: 1.2rem auto 0; }
+.sumi-panel { display: flex; align-items: flex-start; gap: 0.9rem; text-align: left; }
+.sumi-panel .sumi-avatar { width: 78px; height: 82px; }
+.sumi-burbuja {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: #e0f4ff;
+  border: 3px solid #3a86ff;
+  border-radius: 20px;
+  padding: 0.8rem 1rem;
+  color: #222;
+}
+.sumi-burbuja::before {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: 28px;
+  width: 16px;
+  height: 16px;
+  background: #e0f4ff;
+  border-left: 3px solid #3a86ff;
+  border-bottom: 3px solid #3a86ff;
+  transform: rotate(45deg);
+}
+.sumi-panel.cargando .sumi-texto { font-style: italic; }
+.sumi-texto { font-size: 1.1rem; font-weight: 600; line-height: 1.45; color: #222; }
+.sumi-chips, .sumi-detalles { list-style: none; display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.7rem; }
+.sumi-chips li, .sumi-detalles li {
+  background: #ffffff;
+  border: 2px solid #c8d6e5;
+  border-radius: 14px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+.sumi-chips li.chip-dominado, .sumi-detalles li.dominado { background: #d7f8ea; border-color: #00a066; color: #00613d; }
+.sumi-chips li.chip-proceso, .sumi-detalles li.proceso { background: #fff3c4; border-color: #e07b00; color: #6b3d00; }
+.sumi-chips li.chip-refuerzo, .sumi-detalles li.refuerzo { background: #ffe0e0; border-color: #d32f2f; color: #a31515; }
+.sumi-detalles { flex-direction: column; }
+.sumi-acciones { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+.btn-sumi { font-size: 0.95rem; }
+
+/* ---------- Lista de lecciones: estados del grafo ---------- */
+.tl-avance { display: block; font-size: 0.82rem; font-weight: 600; color: #1f55c4; margin-top: 0.1rem; }
+.tarjeta-leccion.en-proceso .num-leccion { background: #b45f00; box-shadow: 0 4px 0 #7a4300; }
+.tarjeta-leccion.en-proceso .badge-leccion { background: #b45f00; }
+.tarjeta-leccion.refuerzo .num-leccion { background: #d32f2f; box-shadow: 0 4px 0 #a31515; }
+.tarjeta-leccion.refuerzo .badge-leccion { background: #d32f2f; }
+.tarjeta-leccion.repaso { border-color: #ffba08; }
+
+/* ---------- Pista sugerida por Sumi ---------- */
+.pista-sumi { display: inline-flex; width: 30px; height: 30px; flex: 0 0 auto; }
+.pista summary { gap: 0.5rem; }
+
+/* ---------- Mapa de aprendizaje ---------- */
+.contenido-mapa { max-width: 780px; max-height: 92vh; overflow-y: auto; padding: 1.6rem 1.4rem 1.4rem; }
+.contenido-mapa h2 { color: #ff006e; margin-bottom: 0.3rem; padding-right: 2.5rem; }
+.contenido-mapa > p { font-weight: 500; color: #576574; }
+.mapa-contenedor { margin-top: 0.6rem; }
+.mapa-svg { width: 100%; height: auto; max-height: 52vh; display: block; }
+.mapa-curso { font-family: inherit; font-size: 19px; font-weight: 700; fill: #1f55c4; }
+.mapa-titulo { font-family: inherit; font-size: 13.5px; font-weight: 700; fill: #222; }
+.mapa-sub { font-family: inherit; font-size: 12.5px; font-weight: 600; fill: #576574; }
+.mapa-icono { font-family: inherit; font-size: 24px; font-weight: 700; }
+.mapa-arista { fill: none; stroke: #8b99ab; stroke-width: 3; stroke-dasharray: 7 6; }
+.mapa-arista.cumplida { stroke: #00a066; stroke-dasharray: none; }
+.flecha-gris { fill: #8b99ab; }
+.flecha-verde { fill: #00a066; }
+.mapa-nodo { cursor: pointer; outline: none; }
+.mapa-nodo circle { stroke-width: 4; transition: stroke-width 0.15s ease; }
+.mapa-nodo:hover circle, .mapa-nodo:focus-visible circle, .mapa-nodo.seleccionado circle { stroke-width: 7; }
+.mapa-nodo:focus-visible circle { stroke: #ff006e; }
+.mapa-nodo.est-bloqueado circle { fill: #e3eaf3; stroke: #8b99ab; }
+.mapa-nodo.est-bloqueado .mapa-icono { fill: #576574; }
+.mapa-nodo.est-disponible circle { fill: #ffffff; stroke: #3a86ff; }
+.mapa-nodo.est-disponible .mapa-icono { fill: #1f55c4; }
+.mapa-nodo.est-proceso circle { fill: #fff3c4; stroke: #e07b00; }
+.mapa-nodo.est-proceso .mapa-icono { fill: #6b3d00; }
+.mapa-nodo.est-refuerzo circle { fill: #ffe0e0; stroke: #d32f2f; }
+.mapa-nodo.est-refuerzo .mapa-icono { fill: #a31515; }
+.mapa-nodo.est-dominado circle { fill: #d7f8ea; stroke: #00a066; }
+.mapa-nodo.est-dominado .mapa-icono { fill: #00613d; }
+
+.mapa-detalle {
+  margin-top: 0.8rem;
+  padding: 0.9rem 1.1rem;
+  background: #f7f9fc;
+  border: 3px solid #c8d6e5;
+  border-radius: 20px;
+  text-align: left;
+}
+.mapa-detalle h3 { font-size: 1.15rem; font-weight: 700; color: #222; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.mapa-desc { font-size: 0.95rem; font-weight: 500; color: #576574; margin: 0.2rem 0 0.4rem; }
+.mapa-datos { font-size: 0.95rem; font-weight: 500; color: #333; margin-top: 0.4rem; }
+.mapa-repaso { font-size: 0.95rem; font-weight: 700; color: #6b3d00; margin-top: 0.4rem; }
+.mapa-dominio { height: 12px; background: #dfe6ee; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; }
+.mapa-dominio-relleno { height: 100%; background: #00a066; border-radius: 8px; }
+.mapa-reqs { list-style: none; margin-top: 0.5rem; font-size: 0.92rem; font-weight: 600; }
+.mapa-reqs li.cumplido { color: #00613d; }
+.mapa-reqs li.pendiente { color: #a31515; }
+.mapa-detalle .btn-ruta { margin-top: 0.7rem; }
+.chip-estado { font-size: 0.8rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 12px; border: 2px solid; }
+.chip-estado.est-bloqueado { background: #e3eaf3; border-color: #8b99ab; color: #3d4a5c; }
+.chip-estado.est-disponible { background: #fff; border-color: #3a86ff; color: #1f55c4; }
+.chip-estado.est-proceso { background: #fff3c4; border-color: #e07b00; color: #6b3d00; }
+.chip-estado.est-refuerzo { background: #ffe0e0; border-color: #d32f2f; color: #a31515; }
+.chip-estado.est-dominado { background: #d7f8ea; border-color: #00a066; color: #00613d; }
+
+.mapa-leyenda { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-weight: 600; color: #333; }
+.mapa-leyenda li { display: flex; align-items: center; gap: 0.35rem; }
+.leyenda-punto { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; border: 3px solid; }
+.leyenda-punto.est-bloqueado { background: #e3eaf3; border-color: #8b99ab; color: #3d4a5c; }
+.leyenda-punto.est-disponible { background: #fff; border-color: #3a86ff; color: #1f55c4; }
+.leyenda-punto.est-proceso { background: #fff3c4; border-color: #e07b00; color: #6b3d00; }
+.leyenda-punto.est-refuerzo { background: #ffe0e0; border-color: #d32f2f; color: #a31515; }
+.leyenda-punto.est-dominado { background: #d7f8ea; border-color: #00a066; color: #00613d; }
+
+@media (max-width: 640px) {
+  .ruta-sumi { flex-direction: column; text-align: center; padding: 1rem; }
+  .ruta-sumi-acciones { justify-content: center; }
+  .sumi-panel { flex-direction: column; align-items: center; }
+  .sumi-burbuja::before { left: 50%; top: -11px; margin-left: -8px; border-left: 3px solid #3a86ff; border-top: 3px solid #3a86ff; border-bottom: none; transform: rotate(45deg); }
+  .contenido-mapa { padding: 1.2rem 0.8rem; }
+  .mapa-svg { max-height: none; }
+}
+
+/* ---------- Modo oscuro ---------- */
+body.tema-oscuro .ruta-sumi { background: #16213e; border-color: #ffba08; box-shadow: 0 10px 0 #ffba08; }
+body.tema-oscuro .ruta-sumi h3 { color: #ffe9a8; }
+body.tema-oscuro .ruta-sumi p { color: #ffffff; }
+body.tema-oscuro .btn-ruta { background: #1f2b4d; color: #cfe3ff; border-color: #5b9bff; box-shadow: 0 4px 0 #34507f; }
+body.tema-oscuro .btn-ruta-principal, body.tema-oscuro .btn-sumi { background: #1f55c4; color: #ffffff; border-color: #9cc4ff; box-shadow: 0 4px 0 #0b2a6b; }
+body.tema-oscuro .sumi-burbuja { background: #0f3460; border-color: #5b9bff; color: #ffffff; }
+body.tema-oscuro .sumi-burbuja::before { background: #0f3460; border-color: #5b9bff; }
+body.tema-oscuro .sumi-texto { color: #ffffff; }
+body.tema-oscuro .sumi-chips li, body.tema-oscuro .sumi-detalles li { background: #1f2b4d; border-color: #34507f; color: #ffffff; }
+body.tema-oscuro .sumi-chips li.chip-dominado, body.tema-oscuro .sumi-detalles li.dominado { background: #0b3d2e; border-color: #00d084; color: #7dffc8; }
+body.tema-oscuro .sumi-chips li.chip-proceso, body.tema-oscuro .sumi-detalles li.proceso { background: #3a3320; border-color: #ffba08; color: #ffe9a8; }
+body.tema-oscuro .sumi-chips li.chip-refuerzo, body.tema-oscuro .sumi-detalles li.refuerzo { background: #4a1f2a; border-color: #ff5252; color: #ffb3b3; }
+body.tema-oscuro .tl-avance { color: #9cc4ff; }
+body.tema-oscuro .contenido-mapa h2 { color: #ff6fa8; }
+body.tema-oscuro .contenido-mapa > p { color: #c8d6e5; }
+body.tema-oscuro .mapa-curso { fill: #9cc4ff; }
+body.tema-oscuro .mapa-titulo { fill: #ffffff; }
+body.tema-oscuro .mapa-sub { fill: #c8d6e5; }
+body.tema-oscuro .mapa-arista { stroke: #7f90ad; }
+body.tema-oscuro .mapa-arista.cumplida { stroke: #00d084; }
+body.tema-oscuro .flecha-gris { fill: #7f90ad; }
+body.tema-oscuro .flecha-verde { fill: #00d084; }
+body.tema-oscuro .mapa-nodo.est-bloqueado circle { fill: #34507f; stroke: #6e7f9c; }
+body.tema-oscuro .mapa-nodo.est-bloqueado .mapa-icono { fill: #ffffff; }
+body.tema-oscuro .mapa-nodo.est-disponible circle { fill: #16213e; stroke: #5b9bff; }
+body.tema-oscuro .mapa-nodo.est-disponible .mapa-icono { fill: #9cc4ff; }
+body.tema-oscuro .mapa-nodo.est-proceso circle { fill: #3a3320; stroke: #ffba08; }
+body.tema-oscuro .mapa-nodo.est-proceso .mapa-icono { fill: #ffe9a8; }
+body.tema-oscuro .mapa-nodo.est-refuerzo circle { fill: #4a1f2a; stroke: #ff5252; }
+body.tema-oscuro .mapa-nodo.est-refuerzo .mapa-icono { fill: #ffb3b3; }
+body.tema-oscuro .mapa-nodo.est-dominado circle { fill: #0b3d2e; stroke: #00d084; }
+body.tema-oscuro .mapa-nodo.est-dominado .mapa-icono { fill: #7dffc8; }
+body.tema-oscuro .mapa-detalle { background: #16213e; border-color: #34507f; }
+body.tema-oscuro .mapa-detalle h3, body.tema-oscuro .mapa-datos { color: #ffffff; }
+body.tema-oscuro .mapa-desc { color: #c8d6e5; }
+body.tema-oscuro .mapa-repaso { color: #ffe9a8; }
+body.tema-oscuro .mapa-dominio { background: #34507f; }
+body.tema-oscuro .mapa-dominio-relleno { background: #00d084; }
+body.tema-oscuro .mapa-reqs li.cumplido { color: #7dffc8; }
+body.tema-oscuro .mapa-reqs li.pendiente { color: #ffb3b3; }
+body.tema-oscuro .mapa-leyenda { color: #ffffff; }
+body.tema-oscuro .chip-estado.est-bloqueado, body.tema-oscuro .leyenda-punto.est-bloqueado { background: #34507f; border-color: #6e7f9c; color: #ffffff; }
+body.tema-oscuro .chip-estado.est-disponible, body.tema-oscuro .leyenda-punto.est-disponible { background: #16213e; border-color: #5b9bff; color: #9cc4ff; }
+body.tema-oscuro .chip-estado.est-proceso, body.tema-oscuro .leyenda-punto.est-proceso { background: #3a3320; border-color: #ffba08; color: #ffe9a8; }
+body.tema-oscuro .chip-estado.est-refuerzo, body.tema-oscuro .leyenda-punto.est-refuerzo { background: #4a1f2a; border-color: #ff5252; color: #ffb3b3; }
+body.tema-oscuro .chip-estado.est-dominado, body.tema-oscuro .leyenda-punto.est-dominado { background: #0b3d2e; border-color: #00d084; color: #7dffc8; }
+
+/* ---------- Alto contraste ---------- */
+body.alto-contraste .ruta-sumi { border-color: #000; box-shadow: 0 10px 0 #000; }
+body.alto-contraste .ruta-sumi h3, body.alto-contraste .ruta-sumi p, body.alto-contraste .sumi-texto,
+body.alto-contraste .mapa-titulo, body.alto-contraste .mapa-sub, body.alto-contraste .mapa-curso { color: #000; fill: #000; }
+body.alto-contraste .sumi-burbuja, body.alto-contraste .mapa-detalle { border-color: #000; }
+body.alto-contraste .sumi-burbuja::before { border-color: #000; }
+body.alto-contraste.tema-oscuro .ruta-sumi { border-color: #fff; box-shadow: 0 10px 0 #fff; }
+body.alto-contraste.tema-oscuro .ruta-sumi h3, body.alto-contraste.tema-oscuro .ruta-sumi p, body.alto-contraste.tema-oscuro .sumi-texto { color: #fff; }
+body.alto-contraste.tema-oscuro .mapa-titulo, body.alto-contraste.tema-oscuro .mapa-sub, body.alto-contraste.tema-oscuro .mapa-curso { fill: #fff; }
+body.alto-contraste.tema-oscuro .sumi-burbuja, body.alto-contraste.tema-oscuro .mapa-detalle { border-color: #fff; }
+body.alto-contraste.tema-oscuro .sumi-burbuja::before { border-color: #fff; }
+
+/* Mapa: el texto lleva un halo del color del fondo para que las flechas no lo atraviesen */
+.mapa-svg { --mapa-halo: #ffffff; }
+body.tema-oscuro .mapa-svg { --mapa-halo: #16213e; }
+.mapa-titulo, .mapa-sub { paint-order: stroke; stroke: var(--mapa-halo); stroke-width: 6px; stroke-linejoin: round; }
