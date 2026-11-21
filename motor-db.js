@@ -1,8 +1,8 @@
 'use strict';
 /**
  * CAPA DE DATOS DEL MOTOR ADAPTATIVO (MySQL).
- * Todas las funciones reciben una conexión de mysql2/promise ya abierta (la misma forma que usa server.js),
- * así que se pueden probar con una conexión simulada. Requiere las tablas de motor_adaptativo.sql.
+ * Todas las funciones reciben una conexión de mysql2/promise ya abierta,
+ * así que se pueden probar con una conexión simulada.
  */
 const motor = require('./motor-adaptativo');
 

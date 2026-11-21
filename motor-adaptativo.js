@@ -1,6 +1,6 @@
 'use strict';
 /**
- * MOTOR ADAPTATIVO DE SUMARIS — lógica pura (sin base de datos ni Express).
+ * MOTOR ADAPTATIVO
  * Todo lo que decide el motor está aquí.
  */
 
@@ -33,7 +33,6 @@ const acotar = (n, min, max) => Math.min(max, Math.max(min, n));
 // ---------------------------------------------------------------------------
 // 1. VALIDACIÓN DE ENTRADA
 // ---------------------------------------------------------------------------
-/** Acepta los nombres del enunciado (usuario_id, nodo_id, pistas_usadas) y los ya usados por SUMARIS (id_usuario, id_nodo, pistas_solicitadas). */
 function normalizarIntento(cuerpo) {
   const c = cuerpo || {};
   const primero = (...claves) => { for (const k of claves) if (c[k] !== undefined && c[k] !== null) return c[k]; return undefined; };
