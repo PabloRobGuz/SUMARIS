@@ -1227,6 +1227,8 @@ body.tema-oscuro .tarjeta-leccion:hover {
   font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
+  margin-top: 7px;
+  transform: translateY(-4px);
   background: #00d084;
   border: 3px solid #00a066;
   border-radius: 20px;
@@ -1871,6 +1873,7 @@ body.alto-contraste.tema-oscuro .teoria-ojo { border-color: #fff; }
   background: #fff9db;
   border: 3px solid #ffba08;
   border-radius: 18px;
+  transform: translateY(30px);
 }
 .pista summary {
   display: flex;

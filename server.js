@@ -13,7 +13,7 @@ app.use(cors());
 const dbConfig = {
     host: 'localhost',
     user: 'root',          
-    password: 'PassL0Lj3j3@',
+    password: 'Venado2026#',
     database: 'sumaris'
 };
 

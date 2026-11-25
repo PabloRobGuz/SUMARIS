@@ -1621,9 +1621,6 @@ function construirMensajeSumi(resultados, s) {
     }));
   } else {
     chips.push({ html: `Puntaje <strong>${Math.round(principal.puntaje)}</strong>` });
-    chips.push({ html: `Dominio <strong>${Math.round(principal.dominio)}%</strong>` });
-    chips.push({ clase: `chip-${CLASE_INDICADOR[principal.indicador]}`, html: `<span aria-hidden="true">${ICONO_INDICADOR[principal.indicador]}</span> ${esc(principal.indicador)}` });
-    chips.push({ html: `<span aria-label="${principal.estrellas} de 3 estrellas">${estrellasTexto(principal.estrellas)}</span>` });
   }
 
   const acciones = [];
@@ -2391,7 +2388,7 @@ function renderEscrita(q, cont) {
 }
 
 // ---------- Tipo: relacionar elementos ----------
-const COLORES_PAREJA = ['#3a86ff', '#7b2cbf', '#8a5a2b', '#0077b6', '#e9a0cc'];
+const COLORES_PAREJA = ['#3a86ff'];
 
 function renderRelacionar(q, cont) {
   const s = sesion;
