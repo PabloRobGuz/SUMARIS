@@ -100,7 +100,7 @@
     <main class="contenido-principal">
       <section class="saludo">
         <h2 id="saludo-titulo">¡Hola de nuevo!</h2>
-        <p>Elige un tema para seguir aprendiendo</p>
+        <p>Sigue tu camino y elige la siguiente lección</p>
       </section>
 
       <!-- ===== RUTA DE SUMI (recomendación del motor adaptativo) ===== -->
@@ -111,12 +111,11 @@
           <p id="ruta-sumi-mensaje" aria-live="polite">Sumi está preparando tu ruta…</p>
           <div class="ruta-sumi-acciones">
             <button type="button" class="btn-ruta btn-ruta-principal" id="ruta-sumi-ir" hidden>Ir ahora</button>
-            <button type="button" class="btn-ruta" id="ruta-sumi-mapa">🗺️ Ver mi mapa</button>
           </div>
         </div>
       </section>
 
-      <!-- ===== PRÁCTICA MIXTA (aparte de los módulos) ===== -->
+      <!-- ===== PRÁCTICA MIXTA (aparte del camino) ===== -->
       <section class="practica-mixta" aria-labelledby="titulo-practica-mixta">
         <button type="button" class="tarjeta-mixta bloqueada" id="btn-practica-mixta" aria-disabled="true">
           <span class="mixta-icono" aria-hidden="true">🎯</span>
@@ -129,65 +128,21 @@
         </button>
       </section>
 
-      <h3 class="titulo-seccion" id="titulo-modulos">Módulos</h3>
-
-      <div class="grid-temas">
-        <!-- CURSO 1: SUMAS -->
-        <div class="tarjeta-tema tema-suma" data-curso="sumas">
-          <div class="icono-tema">➕</div>
-          <h3>Sumas</h3>
-          <p class="descripcion">Aprende a sumar con juegos divertidos</p>
-          <span class="etiqueta">Nivel 1</span>
+      <!-- ===== MAPA GENERAL: reemplaza la rejilla de módulos ===== -->
+      <section class="mapa-general" id="pantalla-mapa" aria-labelledby="titulo-mapa">
+        <div class="contenido-mapa">
+          <div class="mapa-cabecera">
+            <h2 id="titulo-mapa">🗺️ Mi camino</h2>
+            <p id="desc-mapa">Toca un círculo y sigue el camino con Sumi.</p>
+          </div>
+          <div class="mapa-cuerpo">
+            <div class="mapa-contenedor" id="mapa-contenedor">
+              <p class="mapa-cargando">Preparando tu camino…</p>
+            </div>
+            <div class="mapa-detalle" id="mapa-detalle" aria-live="polite"></div>
+          </div>
         </div>
-
-        <!-- CURSO 2: RESTAS -->
-        <div class="tarjeta-tema tema-resta" data-curso="restas">
-          <div class="icono-tema">➖</div>
-          <h3>Restas</h3>
-          <p class="descripcion">Quita y descubre el resultado correcto</p>
-          <span class="etiqueta">Nivel 1</span>
-        </div>
-
-        <!-- CURSO 3: MULTIPLICACIONES -->
-        <div class="tarjeta-tema tema-multi" data-curso="multiplicaciones">
-          <div class="icono-tema">✖️</div>
-          <h3>Multiplicaciones</h3>
-          <p class="descripcion">Las tablas de multiplicar más divertidas</p>
-          <span class="etiqueta">Nivel 2</span>
-        </div>
-
-                <!-- Próximamente (sin lecciones todavía) -->
-        <div class="tarjeta-tema tema-division" data-curso="divisiones">
-          <div class="icono-tema">➗</div>
-          <h3>Divisiones</h3>
-          <p class="descripcion">Reparte en partes iguales y aprende</p>
-          <span class="etiqueta">Nivel 2</span>
-        </div>
-        <div class="tarjeta-tema tema-numeros" data-curso="numeros">
-          <div class="icono-tema">🔢</div>
-          <h3>Los Números</h3>
-          <p class="descripcion">Cuenta, ordena y conoce los números</p>
-          <span class="etiqueta">Nivel 1</span>
-        </div>
-        <div class="tarjeta-tema tema-figuras" data-curso="figuras">
-          <div class="icono-tema">🔺</div>
-          <h3>Figuras Geométricas</h3>
-          <p class="descripcion">Descubre círculos, triángulos y más</p>
-          <span class="etiqueta">Nivel 1</span>
-        </div>
-        <div class="tarjeta-tema tema-fracciones" data-curso="fracciones">
-          <div class="icono-tema">🍕</div>
-          <h3>Fracciones</h3>
-          <p class="descripcion">Aprende con pizza y chocolate</p>
-          <span class="etiqueta">Nivel 3</span>
-        </div>
-        <div class="tarjeta-tema tema-problemas" data-curso="problemas">
-          <div class="icono-tema">🧩</div>
-          <h3>Problemas</h3>
-          <p class="descripcion">Resuelve retos con lógica y matemáticas</p>
-          <span class="etiqueta">Nivel 3</span>
-        </div>
-      </div>
+      </section>
     </main>
   </div>
 
@@ -201,24 +156,6 @@
       <div class="lista-lecciones" id="contenedor-lista-lecciones">
         <!-- Las 3 lecciones se inyectan dinámicamente o se muestran aquí -->
       </div>
-    </div>
-  </div>
-
-  <!-- ================= MAPA DE APRENDIZAJE (GRAFO DE NODOS) ================= -->
-  <div id="pantalla-mapa" class="pantalla-modal" role="dialog" aria-modal="true" aria-labelledby="titulo-mapa">
-    <div class="contenido-modal contenido-mapa">
-      <button class="btn-cerrar-modal" id="cerrar-mapa" aria-label="Cerrar">✖</button>
-      <h2 id="titulo-mapa">Mi mapa de aprendizaje</h2>
-      <p id="desc-mapa">Cada lección se desbloquea cuando dominas la que la precede. Toca una para ver los detalles.</p>
-      <div class="mapa-contenedor" id="mapa-contenedor"></div>
-      <div class="mapa-detalle" id="mapa-detalle" aria-live="polite"></div>
-      <ul class="mapa-leyenda" aria-label="Leyenda del mapa">
-        <li><span class="leyenda-punto est-bloqueado">🔒</span> Bloqueada</li>
-        <li><span class="leyenda-punto est-disponible">▶</span> Disponible</li>
-        <li><span class="leyenda-punto est-proceso">…</span> En proceso</li>
-        <li><span class="leyenda-punto est-refuerzo">!</span> Necesita refuerzo</li>
-        <li><span class="leyenda-punto est-dominado">✔</span> Dominada</li>
-      </ul>
     </div>
   </div>
 

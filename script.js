@@ -443,6 +443,7 @@ function entrarAlSistema(nombre) {
   if (saludoTitulo) saludoTitulo.textContent = `¡Hola de nuevo, ${nombre}!`;
   actualizarPracticaMixta();
   actualizarRutaSumi();
+  renderizarMapa();     // el mapa es la vista general; se muestra mientras llega la ruta del servidor
   sincronizarGrafo();   // trae del servidor el estado del grafo de conocimiento de este estudiante
 }
 
@@ -518,7 +519,7 @@ document.getElementById('btn-salir').addEventListener('click', () => {
   pantallaTest.classList.remove('visible');
   idUsuarioActual = null;
   grafo = null;
-  pantallaMapa.classList.remove('visible');
+  renderizarMapa();
   ajustes = { tema: 'claro', audio: true, contraste: false };
 });
 
@@ -1543,124 +1544,44 @@ async function fetchConTiempo(url, opciones = {}, ms = 6000) {
 
 // ---------- Sumi, la mascota ----------
 function sumiHTML(animo = 'feliz') {
-  const bocas = {
-    feliz: '<path d="M46 82 Q60 94 74 82" fill="none" stroke="#023e8a" stroke-width="4" stroke-linecap="round"/>',
-    celebra: '<path d="M44 80 Q60 104 76 80 Z" fill="#ff006e" stroke="#023e8a" stroke-width="4" stroke-linejoin="round"/>',
-    anima: '<path d="M48 83 Q60 91 72 83" fill="none" stroke="#023e8a" stroke-width="4" stroke-linecap="round"/>',
-    piensa: '<path d="M52 86 H68" fill="none" stroke="#023e8a" stroke-width="4" stroke-linecap="round"/>'
-  };
-  const pupilas = animo === 'piensa' ? { dx: 3, dy: -3 } : { dx: 0, dy: 2 };
+  // La mascota ahora es una imagen (img/sumi.png). El ánimo cambia la animación y el emoji que la acompaña.
   const extras = {
-    celebra: '<text x="6" y="30" font-size="20">✨</text><text x="92" y="26" font-size="20">⭐</text>',
-    piensa: '<text x="88" y="30" font-size="26" font-weight="700" fill="#ff006e">?</text>',
-    anima: '<text x="92" y="30" font-size="22">💪</text>',
+    celebra: '<span class="sumi-extra sumi-extra-1">✨</span><span class="sumi-extra sumi-extra-2">⭐</span>',
+    piensa: '<span class="sumi-extra sumi-extra-2">❓</span>',
+    anima: '<span class="sumi-extra sumi-extra-2">💪</span>',
     feliz: ''
   };
-  const cejas = animo === 'piensa'
-    ? '<path d="M32 44 L52 48" stroke="#023e8a" stroke-width="3.5" stroke-linecap="round"/>'
-    : '';
-  return `<svg class="sumi sumi-${animo}" viewBox="0 0 120 124" aria-hidden="true" focusable="false">
-    <line x1="60" y1="30" x2="60" y2="14" stroke="#023e8a" stroke-width="4" stroke-linecap="round"/>
-    <circle cx="60" cy="10" r="8" fill="#ffdd00" stroke="#c9a800" stroke-width="3"/>
-    <ellipse cx="60" cy="74" rx="46" ry="42" fill="#3a86ff" stroke="#023e8a" stroke-width="4"/>
-    <ellipse cx="60" cy="88" rx="30" ry="24" fill="#e0f4ff"/>
-    <circle cx="43" cy="62" r="12" fill="#fff" stroke="#023e8a" stroke-width="3"/>
-    <circle cx="77" cy="62" r="12" fill="#fff" stroke="#023e8a" stroke-width="3"/>
-    <circle cx="${43 + pupilas.dx}" cy="${62 + pupilas.dy}" r="5.5" fill="#222"/>
-    <circle cx="${77 + pupilas.dx}" cy="${62 + pupilas.dy}" r="5.5" fill="#222"/>
-    ${cejas}
-    <circle cx="28" cy="80" r="6" fill="#ff8fb8" opacity="0.85"/>
-    <circle cx="92" cy="80" r="6" fill="#ff8fb8" opacity="0.85"/>
-    ${bocas[animo] || bocas.feliz}
-    <path d="M54 104 H66 M60 98 V110" stroke="#3a86ff" stroke-width="4" stroke-linecap="round"/>
-    ${extras[animo] || ''}
-  </svg>`;
+  return `<span class="sumi sumi-${animo}" aria-hidden="true"><img class="sumi-img" src="img/sumi.png" alt="" draggable="false">${extras[animo] || ''}</span>`;
 }
 
-const FRASES_SUMI = {
-  destacada: ['¡Increíble! Casi no fallaste. ¡Eres una estrella!', '¡Wow! Lo hiciste genial.', '¡Qué gran trabajo! Así se hace.'],
-  dominado: ['¡Muy bien! Ya dominas «{t}».', '¡Lo lograste! «{t}» ya es tuya.', '¡Excelente! «{t}» quedó dominada.'],
-  practicar: ['Vas muy bien con «{t}», pero te falta un poquito ({d}% de {m}%). ¡Inténtalo otra vez!', '¡Casi! En «{t}» llevas {d}%. Con otra práctica llegas al {m}%.'],
-  reforzar_prerrequisito: ['Antes de seguir con «{t}», repasemos «{r}». ¡Te ayudará mucho!', 'Para «{t}» necesitas afianzar «{r}». ¡Vamos a repasarla juntos!'],
-  repetir: ['«{t}» cuesta al principio, ¡pero tú puedes! Repásala con calma y usa las pistas 💡.', 'No pasa nada. Repite «{t}» y fíjate en las pistas 💡. ¡Vas a lograrlo!']
-};
-const elegirFrase = (lista, datos) => lista[Math.floor(Math.random() * lista.length)].replace(/\{(\w+)\}/g, (_, k) => esc(datos[k] ?? ''));
-
-const ICONO_INDICADOR = { 'Dominado': '✔', 'En proceso': '…', 'Necesita refuerzo': '!' };
-const CLASE_INDICADOR = { 'Dominado': 'dominado', 'En proceso': 'proceso', 'Necesita refuerzo': 'refuerzo' };
 const estrellasTexto = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
 
-/** Convierte la(s) respuesta(s) del motor en lo que dice y muestra Sumi. */
-function construirMensajeSumi(resultados, s) {
-  const min = (grafo && grafo.config && grafo.config.dominio_minimo) || 70;
-  const prioridad = { reforzar_prerrequisito: 0, repetir: 1, practicar: 2, desbloqueo: 3, dominado: 4 };
-  const principal = [...resultados].sort((a, b) => (prioridad[a.codigo_mensaje] ?? 9) - (prioridad[b.codigo_mensaje] ?? 9))[0];
-  const datos = { t: principal.nodo.titulo, d: Math.round(principal.dominio), m: min, r: principal.nodo_refuerzo ? principal.nodo_refuerzo.titulo : '' };
-  const desbloqueados = [];
-  resultados.forEach((r) => r.nodos_desbloqueados.forEach((n) => { if (!desbloqueados.some((x) => x.id_nodo === n.id_nodo)) desbloqueados.push(n); }));
-
-  let texto;
-  let animo;
-  if (['reforzar_prerrequisito', 'repetir', 'practicar'].includes(principal.codigo_mensaje)) {
-    texto = elegirFrase(FRASES_SUMI[principal.codigo_mensaje], datos);
-    animo = principal.codigo_mensaje === 'practicar' ? 'anima' : 'piensa';
-  } else {
-    texto = elegirFrase(principal.sesion_destacada ? FRASES_SUMI.destacada : FRASES_SUMI.dominado, datos);
-    animo = principal.sesion_destacada ? 'celebra' : 'feliz';
+// ---------- Pantalla final: solo el puntaje ----------
+function calcularPuntaje(resultados, s) {
+  if (resultados && resultados.length) {
+    const suma = resultados.reduce((t, r) => t + Number(r.puntaje || 0), 0);
+    return Math.round(suma / resultados.length);
   }
-  if (desbloqueados.length) {
-    texto += ` 🔓 ¡Desbloqueaste ${desbloqueados.map((n) => `«${esc(n.titulo)}»`).join(' y ')}!`;
-    if (animo === 'feliz') animo = 'celebra';
-  }
-
-  const chips = [];
-  const detalles = [];
-  if (s.modo === 'mixta') {
-    resultados.forEach((r) => detalles.push({
-      clase: CLASE_INDICADOR[r.indicador], html: `<span class="det-icono" aria-hidden="true">${ICONO_INDICADOR[r.indicador]}</span> ${esc(r.nodo.titulo)} <strong>${Math.round(r.dominio)}%</strong> · ${esc(r.indicador)}`
-    }));
-  } else {
-    chips.push({ html: `Puntaje <strong>${Math.round(principal.puntaje)}</strong>` });
-    chips.push({ html: `Dominio <strong>${Math.round(principal.dominio)}%</strong>` });
-    chips.push({ clase: `chip-${CLASE_INDICADOR[principal.indicador]}`, html: `<span aria-hidden="true">${ICONO_INDICADOR[principal.indicador]}</span> ${esc(principal.indicador)}` });
-    chips.push({ html: `<span aria-label="${principal.estrellas} de 3 estrellas">${estrellasTexto(principal.estrellas)}</span>` });
-  }
-
-  const acciones = [];
-  const repaso = resultados.find((r) => r.nodo_refuerzo);
-  if (repaso) {
-    const { clave, indice } = infoDeNodo(repaso.nodo_refuerzo.id_nodo);
-    const mismo = repaso.nodo_refuerzo.id_nodo === repaso.nodo.id_nodo;
-    acciones.push({ texto: mismo ? `Repetir «${repaso.nodo_refuerzo.titulo}»` : `Ir al repaso: ${repaso.nodo_refuerzo.titulo}`, ejecutar: () => irALeccion(clave, indice) });
-  }
-  acciones.push({ texto: '🗺️ Ver mi mapa', ejecutar: () => abrirMapa() });
-  return { animo, texto, chips, detalles, acciones };
+  // Sin conexión: puntaje local = porcentaje de aciertos
+  let aciertos = 0;
+  let errores = 0;
+  Object.values(s.porNodo).forEach((st) => { aciertos += st.aciertos; errores += st.errores; });
+  return aciertos + errores ? Math.round((aciertos / (aciertos + errores)) * 100) : 0;
 }
 
-function mensajeSinConexion(s) {
-  return {
-    animo: 'anima',
-    texto: 'No pude conectarme con el servidor, pero tu avance quedó guardado en este dispositivo. ¡Sigue practicando!',
-    chips: [], detalles: [], acciones: []
-  };
-}
-
-function mostrarPanelSumi(slot, { animo, texto, chips = [], detalles = [], acciones = [], cargando = false }) {
-  slot.innerHTML = `<div class="sumi-panel${cargando ? ' cargando' : ''}">
-    <div class="sumi-avatar" aria-hidden="true">${sumiHTML(animo)}</div>
-    <div class="sumi-burbuja">
-      <p class="sumi-texto">${texto}</p>
-      ${chips.length ? `<ul class="sumi-chips">${chips.map((c) => `<li class="${c.clase || ''}">${c.html}</li>`).join('')}</ul>` : ''}
-      ${detalles.length ? `<ul class="sumi-detalles">${detalles.map((d) => `<li class="${d.clase || ''}">${d.html}</li>`).join('')}</ul>` : ''}
-      ${acciones.length ? `<div class="sumi-acciones">${acciones.map((a, i) => `<button type="button" class="btn-sumi" data-i="${i}">${esc(a.texto)}</button>`).join('')}</div>` : ''}
+function mostrarPuntajeFinal(slot, puntaje, cargando = false) {
+  const animo = cargando ? 'piensa' : puntaje >= 80 ? 'celebra' : puntaje >= 50 ? 'feliz' : 'anima';
+  slot.innerHTML = `<div class="puntaje-final${cargando ? ' cargando' : ''}">
+    <div class="puntaje-sumi">${sumiHTML(animo)}</div>
+    <div class="puntaje-caja" role="status">
+      <span class="puntaje-etiqueta">Puntaje</span>
+      <span class="puntaje-numero">${cargando ? '…' : puntaje}</span>
     </div>
   </div>`;
-  slot.querySelectorAll('.btn-sumi').forEach((b) => b.addEventListener('click', () => acciones[Number(b.dataset.i)].ejecutar()));
 }
 
 function irALeccion(clave, indice) {
   cerrarLeccion(false);
-  pantallaMapa.classList.remove('visible');
   pantallaLecciones.classList.remove('visible');
   abrirLeccion(clave, indice);
 }
@@ -1704,7 +1625,7 @@ function refrescarVistasDelGrafo() {
   actualizarRutaSumi();
   actualizarPracticaMixta();
   if (cursoActual && pantallaLecciones.classList.contains('visible')) renderizarListaLecciones();
-  if (pantallaMapa.classList.contains('visible')) renderizarMapa();
+  renderizarMapa();   // el mapa ya no es un modal: siempre refleja el estado del grafo
 }
 
 async function sincronizarGrafo() {
@@ -1750,31 +1671,30 @@ async function evaluarSesionEnServidor(s) {
   return resultados.length ? resultados : null;
 }
 
-async function evaluarYMostrarSumi(s) {
+async function evaluarYMostrarPuntaje(s) {
   const slot = document.getElementById('sumi-slot');
   const esperarFinal = s.fase === 'final' && s.modo === 'leccion';
-  if (slot) mostrarPanelSumi(slot, { animo: 'piensa', texto: 'Sumi está revisando tu desempeño…', cargando: true });
+  if (slot) mostrarPuntajeFinal(slot, 0, true);
   if (esperarFinal) configurarPie('ok', '', 'Calculando…', true);
 
-  const resultados = await evaluarSesionEnServidor(s);
+  const resultados = await evaluarSesionEnServidor(s);   // el motor adaptativo sigue registrando la sesión
   if (resultados) aplicarGrafo(resultados[resultados.length - 1].ruta);
   if (sesion !== s) return;   // el estudiante ya salió de la pantalla
 
   const destino = document.getElementById('sumi-slot');
-  if (destino) mostrarPanelSumi(destino, resultados ? construirMensajeSumi(resultados, s) : mensajeSinConexion(s));
+  if (destino) mostrarPuntajeFinal(destino, calcularPuntaje(resultados, s));
   if (esperarFinal) configurarPie('ok', '', textoBotonFinal(s));
 }
 
 function siguienteLeccionDisponible(s) {
   return s.modo === 'leccion' && s.indice < s.curso.lecciones.length - 1 && estadoLeccion(s.clave, s.indice + 1).estado !== 'bloqueada';
 }
-const textoBotonFinal = (s) => (s.modo === 'mixta' ? 'Volver al inicio' : siguienteLeccionDisponible(s) ? 'Siguiente lección' : 'Volver al curso');
+const textoBotonFinal = (s) => (s.modo === 'mixta' ? 'Volver al inicio' : siguienteLeccionDisponible(s) ? 'Siguiente lección' : 'Volver al camino');
 
 // ---------- Tarjeta «La ruta de Sumi» (pantalla principal) ----------
 const rutaSumiAvatar = document.getElementById('ruta-sumi-avatar');
 const rutaSumiMensaje = document.getElementById('ruta-sumi-mensaje');
 const rutaSumiIr = document.getElementById('ruta-sumi-ir');
-const rutaSumiMapa = document.getElementById('ruta-sumi-mapa');
 let destinoRutaSumi = null;
 
 function actualizarRutaSumi() {
@@ -1783,10 +1703,8 @@ function actualizarRutaSumi() {
     rutaSumiAvatar.innerHTML = sumiHTML('anima');
     rutaSumiMensaje.textContent = 'No pude conectarme con el servidor, pero puedes seguir practicando. Tu avance se guarda en este dispositivo.';
     rutaSumiIr.hidden = true;
-    rutaSumiMapa.hidden = true;
     return;
   }
-  rutaSumiMapa.hidden = false;
   const sig = grafo.siguiente;
   const empezo = grafo.nodos.some((n) => n.sesiones > 0);
   const min = grafo.config.dominio_minimo;
@@ -1822,119 +1740,117 @@ function actualizarRutaSumi() {
   }
 }
 rutaSumiIr.addEventListener('click', () => { if (destinoRutaSumi) irALeccion(destinoRutaSumi.clave, destinoRutaSumi.indice); });
-rutaSumiMapa.addEventListener('click', () => abrirMapa());
 rutaSumiAvatar.innerHTML = sumiHTML('feliz');
 
-// ---------- Mapa de aprendizaje (grafo) ----------
-const pantallaMapa = document.getElementById('pantalla-mapa');
+// ---------- Mapa de aprendizaje: camino sinuoso (vista general) ----------
 const mapaContenedor = document.getElementById('mapa-contenedor');
 const mapaDetalle = document.getElementById('mapa-detalle');
-const COLUMNAS_MAPA = [
-  { clave: 'sumas',           x: 100,  nombre: '➕ Sumas' },
-  { clave: 'restas',          x: 310,  nombre: '➖ Restas' },
-  { clave: 'multiplicaciones',x: 520,  nombre: '✖️ Multiplicaciones' },
-  { clave: 'divisiones',      x: 730,  nombre: '➗ Divisiones' },
-  { clave: 'numeros',         x: 940,  nombre: '🔢 Los Números' },
-  { clave: 'figuras',         x: 1150, nombre: '🔺 Figuras' },
-  { clave: 'fracciones',      x: 1360, nombre: '🍕 Fracciones' },
-  { clave: 'problemas',       x: 1570, nombre: '🧩 Problemas' }
+// Cada curso es una "unidad" del camino, con su propio color
+const UNIDADES_MAPA = [
+  { clave: 'sumas',            emoji: '➕', nombre: 'Sumas',            color: '#3a86ff', oscuro: '#1f55c4' },
+  { clave: 'restas',           emoji: '➖', nombre: 'Restas',           color: '#ff4d94', oscuro: '#c2004f' },
+  { clave: 'multiplicaciones', emoji: '✖️', nombre: 'Multiplicaciones', color: '#14b87a', oscuro: '#0a7d52' },
+  { clave: 'divisiones',       emoji: '➗', nombre: 'Divisiones',       color: '#ff9f1c', oscuro: '#b86a00' },
+  { clave: 'numeros',          emoji: '🔢', nombre: 'Los Números',      color: '#9b5cf6', oscuro: '#6a35c4' },
+  { clave: 'figuras',          emoji: '🔺', nombre: 'Figuras',          color: '#00b4d8', oscuro: '#007f99' },
+  { clave: 'fracciones',       emoji: '🍕', nombre: 'Fracciones',       color: '#ff6b57', oscuro: '#c23a28' },
+  { clave: 'problemas',        emoji: '🧩', nombre: 'Problemas',        color: '#e0a800', oscuro: '#9a7400' }
 ];
-const FILAS_MAPA = [100, 255, 410];
-const RADIO_NODO = 34;
+// Cuánto se mueve cada círculo a la izquierda/derecha para formar la curva del camino (en píxeles)
+const CURVA_CAMINO = [0, 45, 75, 45, 0, -45, -75, -45];
 const CLASE_ESTADO_NODO = { 'Bloqueado': 'est-bloqueado', 'Desbloqueado': 'est-disponible', 'En proceso': 'est-proceso', 'Necesita refuerzo': 'est-refuerzo', 'Dominado': 'est-dominado' };
-const ICONO_ESTADO_NODO = { 'Bloqueado': '🔒', 'Desbloqueado': '▶', 'En proceso': '…', 'Necesita refuerzo': '!', 'Dominado': '✔' };
-const TEXTO_ESTADO_NODO = { 'Bloqueado': 'Bloqueada', 'Desbloqueado': 'Disponible', 'En proceso': 'En proceso', 'Necesita refuerzo': 'Necesita refuerzo', 'Dominado': 'Dominada' };
+const ICONO_ESTADO_NODO = { 'Bloqueado': '🔒', 'Desbloqueado': '▶', 'En proceso': '▶', 'Necesita refuerzo': '🔁', 'Dominado': '✔' };
+const TEXTO_ESTADO_NODO = { 'Bloqueado': 'Bloqueada', 'Desbloqueado': '¡Lista para jugar!', 'En proceso': 'Casi la dominas', 'Necesita refuerzo': 'Hay que repasar', 'Dominado': '¡Dominada!' };
 let nodoMapaSeleccionado = null;
 
-const posicionNodo = (id) => {
-  const { clave, indice } = infoDeNodo(id);
-  const columna = COLUMNAS_MAPA.find((c) => c.clave === clave) || COLUMNAS_MAPA[0];
-  return { x: columna.x, y: FILAS_MAPA[indice] };
-};
-
-function dividirTitulo(texto) {
-  const palabras = texto.split(' ');
-  return palabras.length < 2 ? [texto, ''] : [palabras[0], palabras.slice(1).join(' ')];
-}
-
 function renderizarMapa() {
-  if (!grafo) { mapaContenedor.innerHTML = ''; return; }
-  const aristas = [];
-  grafo.nodos.forEach((n) => n.prerrequisitos.forEach((p) => {
-    const a = posicionNodo(p.id_nodo);
-    const b = posicionNodo(n.id_nodo);
-    let d;
-    if (a.x === b.x) {
-      d = `M ${a.x} ${a.y + RADIO_NODO} L ${b.x} ${b.y - RADIO_NODO - 4}`;
-    } else {
-      const sx = a.x > b.x ? a.x - RADIO_NODO : a.x + RADIO_NODO;
-      const ex = a.x > b.x ? b.x + RADIO_NODO + 4 : b.x - RADIO_NODO - 4;
-      const mx = (sx + ex) / 2;
-      d = `M ${sx} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${ex} ${b.y}`;
-    }
-    aristas.push(`<path class="mapa-arista${p.cumplido ? ' cumplida' : ''}" d="${d}" marker-end="url(#${p.cumplido ? 'flecha-ok' : 'flecha'})"/>`);
-  }));
+  if (!grafo) {
+    mapaContenedor.innerHTML = '<p class="mapa-cargando">Preparando tu camino…</p>';
+    mapaDetalle.innerHTML = '';
+    return;
+  }
+  const idActual = grafo.siguiente ? grafo.siguiente.id_nodo : null;
+  let posicion = 0;   // lleva la cuenta para que la curva continúe de una unidad a la siguiente
 
-  const cabeceras = COLUMNAS_MAPA.map((c) => `<text class="mapa-curso" x="${c.x}" y="34" text-anchor="middle">${esc(c.nombre)}</text>`).join('');
-  const nodos = grafo.nodos.map((n) => {
-    const { x, y } = posicionNodo(n.id_nodo);
-    const [l1, l2] = dividirTitulo(n.titulo);
-    const detalle = n.sesiones > 0 && n.estado !== 'Bloqueado' ? `${estrellasTexto(n.estrellas)} ${Math.round(n.dominio)}%` : TEXTO_ESTADO_NODO[n.estado];
-    const etiqueta = `${n.titulo}: ${TEXTO_ESTADO_NODO[n.estado]}${n.sesiones > 0 ? `, dominio ${Math.round(n.dominio)}%` : ''}`;
-    return `<g class="mapa-nodo ${CLASE_ESTADO_NODO[n.estado]}${nodoMapaSeleccionado === n.id_nodo ? ' seleccionado' : ''}" data-id="${n.id_nodo}" tabindex="0" role="button" aria-label="${esc(etiqueta)}">
-      <circle cx="${x}" cy="${y}" r="${RADIO_NODO}"/>
-      <text class="mapa-icono" x="${x}" y="${y + 9}" text-anchor="middle">${ICONO_ESTADO_NODO[n.estado]}</text>
-      <text class="mapa-titulo" x="${x}" y="${y + RADIO_NODO + 17}" text-anchor="middle">${esc(l1)}</text>
-      <text class="mapa-titulo" x="${x}" y="${y + RADIO_NODO + 33}" text-anchor="middle">${esc(l2)}</text>
-      <text class="mapa-sub" x="${x}" y="${y + RADIO_NODO + 50}" text-anchor="middle">${esc(detalle)}</text>
-    </g>`;
+  const unidades = UNIDADES_MAPA.map((u) => {
+    const nodos = grafo.nodos.filter((n) => infoDeNodo(n.id_nodo).clave === u.clave);
+    if (!nodos.length) return '';
+    const botones = nodos.map((n) => {
+      const dx = CURVA_CAMINO[posicion % CURVA_CAMINO.length];
+      posicion++;
+      const jugada = n.sesiones > 0 && n.estado !== 'Bloqueado';
+      const progreso = n.estado === 'Dominado' ? 100 : jugada ? Math.min(100, Math.round(n.dominio)) : 0;
+      const esActual = n.id_nodo === idActual;
+      const etiqueta = `${n.titulo}: ${TEXTO_ESTADO_NODO[n.estado]}`;
+      // La mascota se para al lado del círculo donde toca jugar (del lado con más espacio)
+      const mascota = esActual
+        ? `<span class="camino-sumi ${dx > 0 ? 'izq' : 'der'}" aria-hidden="true">${sumiHTML('feliz')}<span class="camino-globo">¡Aquí!</span></span>`
+        : '';
+      return `<button type="button" class="camino-nodo ${CLASE_ESTADO_NODO[n.estado]}${esActual ? ' actual' : ''}${nodoMapaSeleccionado === n.id_nodo ? ' seleccionado' : ''}" data-id="${n.id_nodo}" style="--dx:${dx}px" aria-label="${esc(etiqueta)}">
+        ${mascota}
+        <span class="nodo-anillo" style="--p:${progreso}"><span class="nodo-boton"><span class="nodo-icono" aria-hidden="true">${ICONO_ESTADO_NODO[n.estado]}</span></span></span>
+        <span class="nodo-titulo">${esc(n.titulo)}</span>
+        ${jugada ? `<span class="nodo-estrellas" aria-hidden="true">${'⭐'.repeat(n.estrellas)}${'<span class="estrella-vacia">⭐</span>'.repeat(3 - n.estrellas)}</span>` : ''}
+      </button>`;
+    }).join('');
+    return `<section class="camino-unidad" style="--c:${u.color};--c-osc:${u.oscuro}" aria-label="${esc(u.nombre)}">
+      <div class="unidad-banner"><span class="unidad-emoji" aria-hidden="true">${u.emoji}</span><span class="unidad-nombre">${esc(u.nombre)}</span></div>
+      <div class="camino-nodos">${botones}</div>
+    </section>`;
   }).join('');
 
-  mapaContenedor.innerHTML = `<svg viewBox="0 0 1700 560" class="mapa-svg" role="group" aria-label="Mapa de lecciones y prerrequisitos">
-    <defs>
-      <marker id="flecha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="flecha-gris"/></marker>
-      <marker id="flecha-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="flecha-verde"/></marker>
-    </defs>
-    ${cabeceras}${aristas.join('')}${nodos}
-  </svg>`;
-  mapaContenedor.querySelectorAll('.mapa-nodo').forEach((g) => {
-    const elegir = () => mostrarDetalleNodo(Number(g.dataset.id));
-    g.addEventListener('click', elegir);
-    g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); elegir(); } });
+  mapaContenedor.innerHTML = `<div class="camino" role="group" aria-label="Mi camino de lecciones">${unidades}<div class="camino-meta" aria-hidden="true">🏆</div></div>`;
+  mapaContenedor.querySelectorAll('.camino-nodo').forEach((b) => {
+    b.addEventListener('click', () => mostrarDetalleNodo(Number(b.dataset.id)));
   });
-  mostrarDetalleNodo(nodoMapaSeleccionado || (grafo.siguiente.id_nodo ?? grafo.nodos[0].id_nodo), false);
+  mostrarDetalleNodo(nodoMapaSeleccionado || (idActual ?? grafo.nodos[0].id_nodo), false);
+  centrarCaminoEnActual();
+}
+
+function centrarCaminoEnActual() {
+  requestAnimationFrame(() => {
+    const actual = mapaContenedor.querySelector('.camino-nodo.actual');
+    if (!actual) return;
+    mapaContenedor.scrollTop = Math.max(0, actual.offsetTop - mapaContenedor.clientHeight / 2 + 60);
+  });
 }
 
 function mostrarDetalleNodo(id, volverAPintar = true) {
   const n = nodoGrafo(id);
   if (!n) return;
   nodoMapaSeleccionado = id;
-  mapaContenedor.querySelectorAll('.mapa-nodo').forEach((g) => g.classList.toggle('seleccionado', Number(g.dataset.id) === id));
+  mapaContenedor.querySelectorAll('.camino-nodo').forEach((b) => b.classList.toggle('seleccionado', Number(b.dataset.id) === id));
   const { clave, indice } = infoDeNodo(id);
-  const reqs = n.prerrequisitos.map((p) => `<li class="${p.cumplido ? 'cumplido' : 'pendiente'}">${p.cumplido ? '✔' : '✘'} ${esc(p.titulo)}: ${Math.round(p.dominio_actual)}% de ${p.dominio_minimo}%</li>`).join('');
-  const dominio = Math.round(n.dominio);
+  const unidad = UNIDADES_MAPA.find((u) => u.clave === clave) || UNIDADES_MAPA[0];
+  const pendientes = n.prerrequisitos.filter((p) => !p.cumplido);
   const hayRepaso = grafo.refuerzos.some((r) => r.id_nodo_refuerzo === id);
-  const etiquetaBoton = { 'Desbloqueado': 'Empezar', 'En proceso': 'Mejorar', 'Necesita refuerzo': 'Repasar', 'Dominado': 'Practicar de nuevo' }[n.estado];
+  const etiquetaBoton = { 'Desbloqueado': '¡Vamos!', 'En proceso': '¡Mejorar!', 'Necesita refuerzo': '¡Repasar!', 'Dominado': 'Jugar otra vez' }[n.estado];
+
+  let mensaje;
+  if (n.estado === 'Bloqueado') {
+    mensaje = pendientes.length
+      ? `🔒 Primero juega «${esc(pendientes[0].titulo)}» para abrir esta lección.`
+      : '🔒 Termina la lección anterior para abrir esta.';
+  } else if (hayRepaso) {
+    mensaje = '🔁 Sumi te recomienda repasar esta lección.';
+  } else {
+    mensaje = esc(n.descripcion);
+  }
+  const estrellas = n.sesiones > 0 && n.estado !== 'Bloqueado'
+    ? `<div class="detalle-estrellas" aria-label="${n.estrellas} de 3 estrellas">${'⭐'.repeat(n.estrellas)}${'<span class="estrella-vacia">⭐</span>'.repeat(3 - n.estrellas)}</div>` : '';
+
+  mapaDetalle.style.setProperty('--c', unidad.color);
+  mapaDetalle.style.setProperty('--c-osc', unidad.oscuro);
   mapaDetalle.innerHTML = `
-    <h3>${esc(n.titulo)} <span class="chip-estado ${CLASE_ESTADO_NODO[n.estado]}">${ICONO_ESTADO_NODO[n.estado]} ${TEXTO_ESTADO_NODO[n.estado]}</span></h3>
-    <p class="mapa-desc">${esc(n.descripcion)}</p>
-    ${n.sesiones > 0 ? `<div class="mapa-dominio" role="img" aria-label="Dominio ${dominio}%"><div class="mapa-dominio-relleno" style="width:${Math.min(100, dominio)}%"></div></div>
-      <p class="mapa-datos">Dominio <strong>${dominio}%</strong> · Mejor puntaje <strong>${Math.round(n.mejor_puntaje)}</strong> · ${n.sesiones} ${n.sesiones === 1 ? 'sesión' : 'sesiones'} · <span aria-label="${n.estrellas} de 3 estrellas">${estrellasTexto(n.estrellas)}</span></p>` : ''}
-    ${hayRepaso ? '<p class="mapa-repaso">🔁 Sumi te recomienda repasar esta lección.</p>' : ''}
-    ${reqs ? `<ul class="mapa-reqs">${reqs}</ul>` : '<p class="mapa-datos">No necesita ninguna lección previa.</p>'}
-    ${etiquetaBoton ? `<button type="button" class="btn-ruta btn-ruta-principal" id="mapa-ir">${etiquetaBoton}</button>` : ''}`;
+    <div class="detalle-texto">
+      <h3>${unidad.emoji} ${esc(n.titulo)}</h3>
+      <p class="detalle-mensaje">${mensaje}</p>
+      ${estrellas}
+    </div>
+    ${etiquetaBoton ? `<button type="button" class="btn-ruta btn-ruta-principal btn-detalle" id="mapa-ir">${etiquetaBoton}</button>` : ''}`;
   const ir = document.getElementById('mapa-ir');
   if (ir) ir.addEventListener('click', () => irALeccion(clave, indice));
 }
-
-function abrirMapa() {
-  if (!grafo) { mostrarToast('El mapa necesita conexión con el servidor 🌐'); return; }
-  nodoMapaSeleccionado = null;
-  renderizarMapa();
-  pantallaMapa.classList.add('visible');
-}
-document.getElementById('cerrar-mapa').addEventListener('click', () => pantallaMapa.classList.remove('visible'));
-pantallaMapa.addEventListener('click', (e) => { if (e.target === pantallaMapa) pantallaMapa.classList.remove('visible'); });
 
 // ============= Lección en ventana aparte  ================
 const pantallaLeccion = document.getElementById('pantalla-leccion');
@@ -2391,7 +2307,7 @@ function renderEscrita(q, cont) {
 }
 
 // ---------- Tipo: relacionar elementos ----------
-const COLORES_PAREJA = ['#3a86ff', '#7b2cbf', '#8a5a2b', '#0077b6', '#e9a0cc'];
+const COLORES_PAREJA = ['#3a86ff'];
 
 function renderRelacionar(q, cont) {
   const s = sesion;
@@ -2766,15 +2682,12 @@ function mostrarSinVidas() {
     <div class="paso paso-final">
       <div class="emoji-final">💔</div>
       <h2>¡Te quedaste sin vidas!</h2>
-      <p class="texto-teoria">${s.modo === 'mixta'
-        ? 'No pasa nada, equivocarse es parte de aprender. Repasa tus lecciones e inténtalo otra vez.'
-        : 'No pasa nada, equivocarse es parte de aprender. Repasa la teoría e inténtalo otra vez.'}</p>
       <div id="sumi-slot" class="sumi-slot"></div>
     </div>`;
   pintarVidas();
   configurarPie('mal', '', 'Intentar de nuevo');
   s.fase = 'sin-vidas';
-  evaluarYMostrarSumi(s);   // el motor adaptativo evalúa la sesión y Sumi sugiere el repaso
+  evaluarYMostrarPuntaje(s);   // el motor adaptativo evalúa la sesión y se muestra solo el puntaje
 }
 
 function mostrarFinal() {
@@ -2790,11 +2703,10 @@ function mostrarFinal() {
     <div class="paso paso-final">
       <div class="estrellas" aria-label="${estrellas} de 3 estrellas">${'⭐'.repeat(estrellas)}${'☆'.repeat(3 - estrellas)}</div>
       <h2>${s.modo === 'mixta' ? '¡Práctica mixta completada!' : '¡Lección completada!'}</h2>
-      <p class="texto-teoria">${errores === 0 ? '¡Sin ningún error! Eres una estrella.' : `Terminaste con ${s.vidas} ${s.vidas === 1 ? 'vida' : 'vidas'}. ¡Sigue así!`}</p>
       <div id="sumi-slot" class="sumi-slot"></div>
     </div>`;
   configurarPie('ok', '', textoBotonFinal(s));
-  evaluarYMostrarSumi(s);   // el motor adaptativo evalúa la sesión y Sumi comenta el resultado
+  evaluarYMostrarPuntaje(s);   // el motor adaptativo evalúa la sesión y se muestra solo el puntaje
 }
 
 leccionAccion.addEventListener('click', () => {
@@ -2835,8 +2747,7 @@ document.getElementById('leccion-cerrar').addEventListener('click', () => cerrar
 // ========== Atajos de teclado ==========
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    if (pantallaMapa.classList.contains('visible')) pantallaMapa.classList.remove('visible');
-    else if (sesion) cerrarLeccion(true);
+    if (sesion) cerrarLeccion(true);
     else if (pantallaConfig.classList.contains('visible')) pantallaConfig.classList.remove('visible');
     else pantallaLecciones.classList.remove('visible');
     return;

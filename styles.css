@@ -1227,6 +1227,8 @@ body.tema-oscuro .tarjeta-leccion:hover {
   font-size: 1.25rem;
   font-weight: 700;
   color: #fff;
+  margin-top: 7px;
+  transform: translateY(-4px);
   background: #00d084;
   border: 3px solid #00a066;
   border-radius: 20px;
@@ -1871,6 +1873,7 @@ body.alto-contraste.tema-oscuro .teoria-ojo { border-color: #fff; }
   background: #fff9db;
   border: 3px solid #ffba08;
   border-radius: 18px;
+  transform: translateY(30px);
 }
 .pista summary {
   display: flex;
@@ -2120,7 +2123,12 @@ body.alto-contraste .config-barra { background: #0b2a6b; }
 /* ================================================== */
 
 /* ---------- Sumi (mascota) ---------- */
-.sumi { width: 100%; height: 100%; display: block; overflow: visible; }
+.sumi { width: 100%; height: 100%; display: block; position: relative; }
+.sumi-img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 4px 0 rgba(2, 62, 138, 0.18)); user-select: none; -webkit-user-drag: none; }
+.sumi-extra { position: absolute; font-size: 1.5rem; line-height: 1; pointer-events: none; animation: sumiBrillo 1.2s ease-in-out infinite; }
+.sumi-extra-1 { top: 2%; left: -6%; }
+.sumi-extra-2 { top: 0; right: -8%; animation-delay: 0.3s; }
+@keyframes sumiBrillo { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: 0.75; } }
 .sumi-feliz, .sumi-anima { animation: sumiRebote 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
 .sumi-celebra { animation: sumiSalto 0.9s ease-in-out infinite; transform-origin: 50% 90%; }
 .sumi-piensa { animation: sumiBalanceo 3s ease-in-out infinite; transform-origin: 50% 90%; }
@@ -2129,7 +2137,7 @@ body.alto-contraste .config-barra { background: #0b2a6b; }
 @keyframes sumiBalanceo { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
 @media (prefers-reduced-motion: reduce) { .sumi { animation: none !important; } }
 
-.sumi-avatar { flex: 0 0 auto; width: 86px; height: 90px; }
+.sumi-avatar { flex: 0 0 auto; width: 80px; height: 110px; }
 
 /* ---------- Tarjeta «La ruta de Sumi» ---------- */
 .ruta-sumi {
@@ -2170,7 +2178,7 @@ body.alto-contraste .config-barra { background: #0b2a6b; }
 /* ---------- Panel de Sumi en las pantallas finales ---------- */
 .sumi-slot { width: 100%; max-width: 580px; margin: 1.2rem auto 0; }
 .sumi-panel { display: flex; align-items: flex-start; gap: 0.9rem; text-align: left; }
-.sumi-panel .sumi-avatar { width: 78px; height: 82px; }
+.sumi-panel .sumi-avatar { width: 70px; height: 96px; }
 .sumi-burbuja {
   position: relative;
   flex: 1;
@@ -2224,76 +2232,141 @@ body.alto-contraste .config-barra { background: #0b2a6b; }
 .pista-sumi { display: inline-flex; width: 30px; height: 30px; flex: 0 0 auto; }
 .pista summary { gap: 0.5rem; }
 
-/* ---------- Mapa de aprendizaje ---------- */
-.contenido-mapa { max-width: 780px; max-height: 92vh; overflow-y: auto; padding: 1.6rem 1.4rem 1.4rem; }
-.contenido-mapa h2 { color: #ff006e; margin-bottom: 0.3rem; padding-right: 2.5rem; }
-.contenido-mapa > p { font-weight: 500; color: #576574; }
-.mapa-contenedor { margin-top: 0.6rem; }
-.mapa-svg { width: 100%; height: auto; max-height: 52vh; display: block; }
-.mapa-curso { font-family: inherit; font-size: 19px; font-weight: 700; fill: #1f55c4; }
-.mapa-titulo { font-family: inherit; font-size: 13.5px; font-weight: 700; fill: #222; }
-.mapa-sub { font-family: inherit; font-size: 12.5px; font-weight: 600; fill: #576574; }
-.mapa-icono { font-family: inherit; font-size: 24px; font-weight: 700; }
-.mapa-arista { fill: none; stroke: #8b99ab; stroke-width: 3; stroke-dasharray: 7 6; }
-.mapa-arista.cumplida { stroke: #00a066; stroke-dasharray: none; }
-.flecha-gris { fill: #8b99ab; }
-.flecha-verde { fill: #00a066; }
-.mapa-nodo { cursor: pointer; outline: none; }
-.mapa-nodo circle { stroke-width: 4; transition: stroke-width 0.15s ease; }
-.mapa-nodo:hover circle, .mapa-nodo:focus-visible circle, .mapa-nodo.seleccionado circle { stroke-width: 7; }
-.mapa-nodo:focus-visible circle { stroke: #ff006e; }
-.mapa-nodo.est-bloqueado circle { fill: #e3eaf3; stroke: #8b99ab; }
-.mapa-nodo.est-bloqueado .mapa-icono { fill: #576574; }
-.mapa-nodo.est-disponible circle { fill: #ffffff; stroke: #3a86ff; }
-.mapa-nodo.est-disponible .mapa-icono { fill: #1f55c4; }
-.mapa-nodo.est-proceso circle { fill: #fff3c4; stroke: #e07b00; }
-.mapa-nodo.est-proceso .mapa-icono { fill: #6b3d00; }
-.mapa-nodo.est-refuerzo circle { fill: #ffe0e0; stroke: #d32f2f; }
-.mapa-nodo.est-refuerzo .mapa-icono { fill: #a31515; }
-.mapa-nodo.est-dominado circle { fill: #d7f8ea; stroke: #00a066; }
-.mapa-nodo.est-dominado .mapa-icono { fill: #00613d; }
-
-.mapa-detalle {
-  margin-top: 0.8rem;
-  padding: 0.9rem 1.1rem;
-  background: #f7f9fc;
-  border: 3px solid #c8d6e5;
-  border-radius: 20px;
-  text-align: left;
+/* ---------- Puntaje final de la lección (solo el puntaje) ---------- */
+.puntaje-final { display: flex; align-items: center; justify-content: center; gap: 1.2rem; margin-top: 1rem; }
+.puntaje-sumi { width: 110px; height: 156px; flex: 0 0 auto; }
+.puntaje-caja {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 170px; padding: 0.8rem 1.6rem 1rem;
+  background: #fff7d6; border: 4px solid #ffba08; border-radius: 28px; box-shadow: 0 8px 0 #e0a100;
 }
-.mapa-detalle h3 { font-size: 1.15rem; font-weight: 700; color: #222; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-.mapa-desc { font-size: 0.95rem; font-weight: 500; color: #576574; margin: 0.2rem 0 0.4rem; }
-.mapa-datos { font-size: 0.95rem; font-weight: 500; color: #333; margin-top: 0.4rem; }
-.mapa-repaso { font-size: 0.95rem; font-weight: 700; color: #6b3d00; margin-top: 0.4rem; }
-.mapa-dominio { height: 12px; background: #dfe6ee; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; }
-.mapa-dominio-relleno { height: 100%; background: #00a066; border-radius: 8px; }
-.mapa-reqs { list-style: none; margin-top: 0.5rem; font-size: 0.92rem; font-weight: 600; }
-.mapa-reqs li.cumplido { color: #00613d; }
-.mapa-reqs li.pendiente { color: #a31515; }
-.mapa-detalle .btn-ruta { margin-top: 0.7rem; }
-.chip-estado { font-size: 0.8rem; font-weight: 700; padding: 0.15rem 0.6rem; border-radius: 12px; border: 2px solid; }
-.chip-estado.est-bloqueado { background: #e3eaf3; border-color: #8b99ab; color: #3d4a5c; }
-.chip-estado.est-disponible { background: #fff; border-color: #3a86ff; color: #1f55c4; }
-.chip-estado.est-proceso { background: #fff3c4; border-color: #e07b00; color: #6b3d00; }
-.chip-estado.est-refuerzo { background: #ffe0e0; border-color: #d32f2f; color: #a31515; }
-.chip-estado.est-dominado { background: #d7f8ea; border-color: #00a066; color: #00613d; }
+.puntaje-etiqueta { font-size: 1.3rem; font-weight: 700; color: #6b4300; text-transform: uppercase; letter-spacing: 0.08em; }
+.puntaje-numero { font-size: 4.5rem; font-weight: 700; line-height: 1.05; color: #ff006e; animation: puntajeAparece 0.5s ease-out; }
+.puntaje-final.cargando .puntaje-numero { animation: sumiBrillo 1s ease-in-out infinite; }
+@keyframes puntajeAparece { from { transform: scale(0.4); opacity: 0; } 70% { transform: scale(1.15); } to { transform: scale(1); opacity: 1; } }
+body.tema-oscuro .puntaje-caja { background: #16213e; border-color: #ffba08; box-shadow: 0 8px 0 #b88200; }
+body.tema-oscuro .puntaje-etiqueta { color: #ffe9a8; }
+body.tema-oscuro .puntaje-numero { color: #ff6fa8; }
+@media (max-width: 480px) { .puntaje-final { flex-direction: column; gap: 0.4rem; } .puntaje-sumi { width: 90px; height: 128px; } }
 
-.mapa-leyenda { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1rem; margin-top: 0.9rem; font-size: 0.85rem; font-weight: 600; color: #333; }
-.mapa-leyenda li { display: flex; align-items: center; gap: 0.35rem; }
-.leyenda-punto { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; border: 3px solid; }
-.leyenda-punto.est-bloqueado { background: #e3eaf3; border-color: #8b99ab; color: #3d4a5c; }
-.leyenda-punto.est-disponible { background: #fff; border-color: #3a86ff; color: #1f55c4; }
-.leyenda-punto.est-proceso { background: #fff3c4; border-color: #e07b00; color: #6b3d00; }
-.leyenda-punto.est-refuerzo { background: #ffe0e0; border-color: #d32f2f; color: #a31515; }
-.leyenda-punto.est-dominado { background: #d7f8ea; border-color: #00a066; color: #00613d; }
+/* ---------- Mapa de aprendizaje: camino sinuoso (vista general) ---------- */
+.mapa-general { margin-top: 1.5rem; }
+.contenido-mapa {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 1rem;
+  padding: 1.1rem;
+  background: #ffffff;
+  border: 4px solid #ffba08;
+  border-radius: 28px;
+  box-shadow: 0 10px 0 #ffba08;
+}
+.mapa-cabecera { grid-column: 1 / -1; padding-right: 0; }
+.contenido-mapa h2 { color: #ff006e; font-size: 1.8rem; margin-bottom: 0.1rem; }
+.mapa-cabecera p { font-weight: 500; color: #576574; font-size: 1.05rem; margin-bottom: 0.6rem; }
+.mapa-cuerpo { display: contents; }
+.mapa-cargando { text-align: center; font-weight: 600; color: #576574; padding: 3rem 1rem; }
+.mapa-contenedor {
+  position: relative; min-height: 420px; height: min(62vh, 640px); overflow-y: auto; overflow-x: hidden;
+  border-radius: 22px; background: linear-gradient(180deg, #e7f6ff 0%, #f4fff0 100%);
+  scroll-behavior: smooth; overscroll-behavior: contain;
+}
+.camino { padding: 0.8rem 0.6rem 1.2rem; }
+
+/* Cada curso: una franja de color y 3 círculos */
+.camino-unidad { margin-bottom: 0.4rem; }
+.unidad-banner {
+  display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  margin: 0.4rem 0.4rem 1.1rem; padding: 0.7rem 1rem;
+  background: var(--c); color: #fff; border-radius: 20px; box-shadow: 0 6px 0 var(--c-osc);
+}
+.unidad-emoji { font-size: 2rem; line-height: 1; }
+.unidad-nombre { font-size: 1.5rem; font-weight: 700; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2); }
+.camino-nodos { display: flex; flex-direction: column; align-items: center; gap: 1.3rem; }
+
+.camino-nodo {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+  width: 150px; padding: 0; border: none; background: none; font-family: inherit; cursor: pointer;
+  transform: translateX(var(--dx, 0px)); -webkit-tap-highlight-color: transparent;
+}
+.camino-nodo:focus-visible { outline: 4px solid #ff006e; outline-offset: 4px; border-radius: 20px; }
+
+/* El anillo muestra cuánto has avanzado */
+.nodo-anillo {
+  --anillo: var(--c-osc); display: flex; align-items: center; justify-content: center;
+  width: 98px; height: 98px; padding: 7px; border-radius: 50%;
+  background: conic-gradient(var(--anillo) calc(var(--p) * 1%), rgba(0, 0, 0, 0.1) 0);
+  transition: transform 0.15s ease;
+}
+.nodo-boton {
+  display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%;
+  background: var(--c); border: 4px solid rgba(255, 255, 255, 0.55); box-shadow: 0 8px 0 var(--c-osc);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.nodo-icono { font-size: 2.3rem; font-weight: 700; color: #fff; line-height: 1; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25); }
+.camino-nodo:hover .nodo-anillo { transform: scale(1.06); }
+.camino-nodo:active .nodo-boton { transform: translateY(6px); box-shadow: 0 2px 0 var(--c-osc); }
+.camino-nodo.seleccionado .nodo-anillo { transform: scale(1.1); }
+.nodo-titulo { font-size: 1.05rem; font-weight: 700; line-height: 1.15; color: #243b53; text-align: center; padding: 0 0.2rem; margin-top: 0.35rem; }
+.nodo-estrellas { font-size: 1.15rem; letter-spacing: 0.05em; line-height: 1; }
+.estrella-vacia, .detalle-estrellas .estrella-vacia { filter: grayscale(1) opacity(0.35); }
+
+/* Estados */
+.camino-nodo.est-bloqueado .nodo-anillo { --anillo: transparent; background: none; }
+.camino-nodo.est-bloqueado .nodo-boton { background: #d5dde8; box-shadow: 0 8px 0 #a9b6c8; border-color: #eef2f7; }
+.camino-nodo.est-bloqueado .nodo-icono { text-shadow: none; filter: grayscale(0.4); }
+.camino-nodo.est-bloqueado .nodo-titulo { color: #7b8a9c; }
+.camino-nodo.est-dominado .nodo-anillo { --anillo: #ffc800; }
+.camino-nodo.est-dominado .nodo-boton { background: #ffc800; box-shadow: 0 8px 0 #d99d00; }
+.camino-nodo.est-refuerzo .nodo-anillo { --anillo: #d32f2f; }
+.camino-nodo.est-refuerzo .nodo-boton { background: #ff7a45; box-shadow: 0 8px 0 #c24a16; }
+.camino-nodo.est-disponible .nodo-anillo { background: rgba(255, 255, 255, 0.9); }
+.camino-nodo.actual .nodo-anillo { animation: nodoLatido 1.5s ease-in-out infinite; box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.9), 0 0 0 12px var(--c); }
+@keyframes nodoLatido { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+/* Sumi se para junto al círculo donde toca jugar */
+.camino-sumi { position: absolute; top: 14px; width: 62px; height: 88px; pointer-events: none; z-index: 2; }
+.camino-sumi.izq { right: calc(50% + 62px); }
+.camino-sumi.der { left: calc(50% + 62px); }
+.camino-globo {
+  position: absolute; top: -24px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+  background: #fff; color: #ff006e; font-size: 0.9rem; font-weight: 700; padding: 0.15rem 0.6rem;
+  border: 3px solid #ff006e; border-radius: 14px;
+}
+.camino-meta { text-align: center; font-size: 3.5rem; margin-top: 0.8rem; }
+
+/* Panel de abajo: lo que pasa al tocar un círculo */
+.mapa-detalle {
+  --c: #3a86ff; --c-osc: #1f55c4;
+  display: flex; flex-direction: column; align-items: stretch; gap: 0.8rem; align-self: start;
+  position: sticky; top: 96px; margin-top: 0; padding: 0.9rem 1rem; text-align: left;
+  background: #ffffff; border: 4px solid var(--c); border-radius: 22px; box-shadow: 0 6px 0 var(--c-osc);
+}
+.detalle-texto { min-width: 0; }
+.mapa-detalle h3 { font-size: 1.3rem; font-weight: 700; color: #243b53; line-height: 1.2; }
+.detalle-mensaje { font-size: 1rem; font-weight: 500; color: #576574; margin-top: 0.15rem; line-height: 1.3; }
+.detalle-estrellas { font-size: 1.4rem; margin-top: 0.2rem; line-height: 1; }
+.btn-detalle { flex: 0 0 auto; align-self: stretch; font-size: 1.1rem; padding: 0.7rem 1.2rem; background: var(--c); border-color: var(--c-osc); box-shadow: 0 5px 0 var(--c-osc); }
+
 
 @media (max-width: 640px) {
   .ruta-sumi { flex-direction: column; text-align: center; padding: 1rem; }
   .ruta-sumi-acciones { justify-content: center; }
   .sumi-panel { flex-direction: column; align-items: center; }
   .sumi-burbuja::before { left: 50%; top: -11px; margin-left: -8px; border-left: 3px solid #3a86ff; border-top: 3px solid #3a86ff; border-bottom: none; transform: rotate(45deg); }
-  .contenido-mapa { padding: 1.2rem 0.8rem; }
-  .mapa-svg { max-height: none; }
+}
+
+@media (max-width: 980px) {
+  .contenido-mapa { grid-template-columns: 1fr; }
+  .mapa-contenedor { height: 58vh; min-height: 340px; }
+  .mapa-detalle { position: static; flex-direction: row; align-items: center; justify-content: space-between; }
+  .btn-detalle { align-self: auto; }
+}
+
+@media (max-width: 520px) {
+  .mapa-detalle { flex-direction: column; align-items: stretch; }
+  .btn-detalle { align-self: stretch; }
 }
 
 /* ---------- Modo oscuro ---------- */
@@ -2310,56 +2383,20 @@ body.tema-oscuro .sumi-chips li.chip-dominado, body.tema-oscuro .sumi-detalles l
 body.tema-oscuro .sumi-chips li.chip-proceso, body.tema-oscuro .sumi-detalles li.proceso { background: #3a3320; border-color: #ffba08; color: #ffe9a8; }
 body.tema-oscuro .sumi-chips li.chip-refuerzo, body.tema-oscuro .sumi-detalles li.refuerzo { background: #4a1f2a; border-color: #ff5252; color: #ffb3b3; }
 body.tema-oscuro .tl-avance { color: #9cc4ff; }
-body.tema-oscuro .contenido-mapa h2 { color: #ff6fa8; }
-body.tema-oscuro .contenido-mapa > p { color: #c8d6e5; }
-body.tema-oscuro .mapa-curso { fill: #9cc4ff; }
-body.tema-oscuro .mapa-titulo { fill: #ffffff; }
-body.tema-oscuro .mapa-sub { fill: #c8d6e5; }
-body.tema-oscuro .mapa-arista { stroke: #7f90ad; }
-body.tema-oscuro .mapa-arista.cumplida { stroke: #00d084; }
 body.tema-oscuro .flecha-gris { fill: #7f90ad; }
 body.tema-oscuro .flecha-verde { fill: #00d084; }
-body.tema-oscuro .mapa-nodo.est-bloqueado circle { fill: #34507f; stroke: #6e7f9c; }
-body.tema-oscuro .mapa-nodo.est-bloqueado .mapa-icono { fill: #ffffff; }
-body.tema-oscuro .mapa-nodo.est-disponible circle { fill: #16213e; stroke: #5b9bff; }
-body.tema-oscuro .mapa-nodo.est-disponible .mapa-icono { fill: #9cc4ff; }
-body.tema-oscuro .mapa-nodo.est-proceso circle { fill: #3a3320; stroke: #ffba08; }
-body.tema-oscuro .mapa-nodo.est-proceso .mapa-icono { fill: #ffe9a8; }
-body.tema-oscuro .mapa-nodo.est-refuerzo circle { fill: #4a1f2a; stroke: #ff5252; }
-body.tema-oscuro .mapa-nodo.est-refuerzo .mapa-icono { fill: #ffb3b3; }
-body.tema-oscuro .mapa-nodo.est-dominado circle { fill: #0b3d2e; stroke: #00d084; }
-body.tema-oscuro .mapa-nodo.est-dominado .mapa-icono { fill: #7dffc8; }
-body.tema-oscuro .mapa-detalle { background: #16213e; border-color: #34507f; }
-body.tema-oscuro .mapa-detalle h3, body.tema-oscuro .mapa-datos { color: #ffffff; }
-body.tema-oscuro .mapa-desc { color: #c8d6e5; }
-body.tema-oscuro .mapa-repaso { color: #ffe9a8; }
-body.tema-oscuro .mapa-dominio { background: #34507f; }
-body.tema-oscuro .mapa-dominio-relleno { background: #00d084; }
-body.tema-oscuro .mapa-reqs li.cumplido { color: #7dffc8; }
-body.tema-oscuro .mapa-reqs li.pendiente { color: #ffb3b3; }
-body.tema-oscuro .mapa-leyenda { color: #ffffff; }
-body.tema-oscuro .chip-estado.est-bloqueado, body.tema-oscuro .leyenda-punto.est-bloqueado { background: #34507f; border-color: #6e7f9c; color: #ffffff; }
-body.tema-oscuro .chip-estado.est-disponible, body.tema-oscuro .leyenda-punto.est-disponible { background: #16213e; border-color: #5b9bff; color: #9cc4ff; }
-body.tema-oscuro .chip-estado.est-proceso, body.tema-oscuro .leyenda-punto.est-proceso { background: #3a3320; border-color: #ffba08; color: #ffe9a8; }
-body.tema-oscuro .chip-estado.est-refuerzo, body.tema-oscuro .leyenda-punto.est-refuerzo { background: #4a1f2a; border-color: #ff5252; color: #ffb3b3; }
-body.tema-oscuro .chip-estado.est-dominado, body.tema-oscuro .leyenda-punto.est-dominado { background: #0b3d2e; border-color: #00d084; color: #7dffc8; }
 
 /* ---------- Alto contraste ---------- */
-body.alto-contraste .ruta-sumi { border-color: #000; box-shadow: 0 10px 0 #000; }
+body.alto-contraste .ruta-sumi,
+body.alto-contraste .contenido-mapa { border-color: #000; box-shadow: 0 10px 0 #000; }
 body.alto-contraste .ruta-sumi h3, body.alto-contraste .ruta-sumi p, body.alto-contraste .sumi-texto,
-body.alto-contraste .mapa-titulo, body.alto-contraste .mapa-sub, body.alto-contraste .mapa-curso { color: #000; fill: #000; }
 body.alto-contraste .sumi-burbuja, body.alto-contraste .mapa-detalle { border-color: #000; }
 body.alto-contraste .sumi-burbuja::before { border-color: #000; }
-body.alto-contraste.tema-oscuro .ruta-sumi { border-color: #fff; box-shadow: 0 10px 0 #fff; }
+body.alto-contraste.tema-oscuro .ruta-sumi,
+body.alto-contraste.tema-oscuro .contenido-mapa { border-color: #fff; box-shadow: 0 10px 0 #fff; }
 body.alto-contraste.tema-oscuro .ruta-sumi h3, body.alto-contraste.tema-oscuro .ruta-sumi p, body.alto-contraste.tema-oscuro .sumi-texto { color: #fff; }
-body.alto-contraste.tema-oscuro .mapa-titulo, body.alto-contraste.tema-oscuro .mapa-sub, body.alto-contraste.tema-oscuro .mapa-curso { fill: #fff; }
 body.alto-contraste.tema-oscuro .sumi-burbuja, body.alto-contraste.tema-oscuro .mapa-detalle { border-color: #fff; }
 body.alto-contraste.tema-oscuro .sumi-burbuja::before { border-color: #fff; }
-
-/* Mapa: el texto lleva un halo del color del fondo para que las flechas no lo atraviesen */
-.mapa-svg { --mapa-halo: #ffffff; }
-body.tema-oscuro .mapa-svg { --mapa-halo: #16213e; }
-.mapa-titulo, .mapa-sub { paint-order: stroke; stroke: var(--mapa-halo); stroke-width: 6px; stroke-linejoin: round; }
 
 .visual-leccion .figura-svg,
 .teoria-ejemplo-visual .figura-svg {
@@ -2370,3 +2407,22 @@ body.tema-oscuro .mapa-svg { --mapa-halo: #16213e; }
   height: auto;
   filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.12));
 }
+
+/* Mapa en modo oscuro */
+body.tema-oscuro .contenido-mapa { background: #16213e; border-color: #ffba08; box-shadow: 0 10px 0 #b88200; }
+body.tema-oscuro .contenido-mapa h2 { color: #ff6fa8; }
+body.tema-oscuro .mapa-cabecera p { color: #c8d6e5; }
+body.tema-oscuro .mapa-cargando { color: #c8d6e5; }
+body.tema-oscuro .mapa-contenedor { background: linear-gradient(180deg, #16213e 0%, #0f3460 100%); }
+body.tema-oscuro .nodo-titulo { color: #ffffff; }
+body.tema-oscuro .camino-nodo.est-bloqueado .nodo-titulo { color: #9fb0c9; }
+body.tema-oscuro .camino-nodo.est-bloqueado .nodo-boton { background: #34507f; box-shadow: 0 8px 0 #22365a; border-color: #4a6591; }
+body.tema-oscuro .camino-nodo.est-disponible .nodo-anillo { background: rgba(255, 255, 255, 0.25); }
+body.tema-oscuro .camino-nodo.actual .nodo-anillo { box-shadow: 0 0 0 6px #16213e, 0 0 0 12px var(--c); }
+body.tema-oscuro .mapa-detalle { background: #16213e; }
+body.tema-oscuro .mapa-detalle h3 { color: #ffffff; }
+body.tema-oscuro .detalle-mensaje { color: #c8d6e5; }
+body.tema-oscuro .camino-globo { background: #16213e; color: #ff9fc4; border-color: #ff6fa8; }
+body.alto-contraste .nodo-titulo, body.alto-contraste .mapa-detalle h3, body.alto-contraste .detalle-mensaje { color: #000; }
+body.alto-contraste.tema-oscuro .nodo-titulo, body.alto-contraste.tema-oscuro .mapa-detalle h3, body.alto-contraste.tema-oscuro .detalle-mensaje { color: #fff; }
+body.tema-oscuro .mapa-detalle .btn-detalle { background: var(--c); border-color: #ffffff; box-shadow: 0 5px 0 var(--c-osc); color: #ffffff; }
