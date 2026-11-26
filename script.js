@@ -7,7 +7,6 @@ const pantallaAuth = document.getElementById('pantalla-auth');
 const interfazPrincipal = document.getElementById('interfaz-principal');
 const errorLogin = document.getElementById('error-login');
 const nombreMostrado = document.getElementById('nombre-mostrado');
-const saludoTitulo = document.getElementById('saludo-titulo');
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -440,9 +439,7 @@ function entrarAlSistema(nombre) {
   pantallaAuth.style.display = 'none';
   interfazPrincipal.classList.add('visible');
   nombreMostrado.textContent = nombre;
-  if (saludoTitulo) saludoTitulo.textContent = `¡Hola de nuevo, ${nombre}!`;
   actualizarPracticaMixta();
-  actualizarRutaSumi();
   renderizarMapa();     // el mapa es la vista general; se muestra mientras llega la ruta del servidor
   sincronizarGrafo();   // trae del servidor el estado del grafo de conocimiento de este estudiante
 }
@@ -1622,7 +1619,6 @@ function aplicarGrafo(ruta) {
 }
 
 function refrescarVistasDelGrafo() {
-  actualizarRutaSumi();
   actualizarPracticaMixta();
   if (cursoActual && pantallaLecciones.classList.contains('visible')) renderizarListaLecciones();
   renderizarMapa();   // el mapa ya no es un modal: siempre refleja el estado del grafo
@@ -1690,57 +1686,6 @@ function siguienteLeccionDisponible(s) {
   return s.modo === 'leccion' && s.indice < s.curso.lecciones.length - 1 && estadoLeccion(s.clave, s.indice + 1).estado !== 'bloqueada';
 }
 const textoBotonFinal = (s) => (s.modo === 'mixta' ? 'Volver al inicio' : siguienteLeccionDisponible(s) ? 'Siguiente lección' : 'Volver al camino');
-
-// ---------- Tarjeta «La ruta de Sumi» (pantalla principal) ----------
-const rutaSumiAvatar = document.getElementById('ruta-sumi-avatar');
-const rutaSumiMensaje = document.getElementById('ruta-sumi-mensaje');
-const rutaSumiIr = document.getElementById('ruta-sumi-ir');
-let destinoRutaSumi = null;
-
-function actualizarRutaSumi() {
-  destinoRutaSumi = null;
-  if (!grafo) {
-    rutaSumiAvatar.innerHTML = sumiHTML('anima');
-    rutaSumiMensaje.textContent = 'No pude conectarme con el servidor, pero puedes seguir practicando. Tu avance se guarda en este dispositivo.';
-    rutaSumiIr.hidden = true;
-    return;
-  }
-  const sig = grafo.siguiente;
-  const empezo = grafo.nodos.some((n) => n.sesiones > 0);
-  const min = grafo.config.dominio_minimo;
-  let animo = 'feliz';
-  let texto;
-  let boton = 'Ir ahora';
-  if (sig.motivo === 'refuerzo') {
-    animo = 'piensa';
-    texto = sig.origen_titulo && sig.origen_titulo !== sig.titulo
-      ? `Antes de seguir con «${sig.origen_titulo}», te recomiendo repasar «${sig.titulo}». ¡Así avanzas más fácil!`
-      : `Te recomiendo repetir «${sig.titulo}». ¡Con las pistas 💡 lo vas a lograr!`;
-    boton = 'Repasar ahora';
-  } else if (sig.motivo === 'mejorar') {
-    animo = 'anima';
-    texto = `Estás cerca de dominar «${sig.titulo}». Inténtalo otra vez para llegar al ${min}%.`;
-    boton = 'Mejorar';
-  } else if (sig.motivo === 'continuar') {
-    texto = empezo ? `¡Sigue con «${sig.titulo}»! Es tu siguiente paso.` : `¡Hola! Soy Sumi. Empecemos con «${sig.titulo}».`;
-    boton = empezo ? 'Continuar' : 'Empezar';
-  } else {
-    animo = 'celebra';
-    texto = '¡Dominaste todo el mapa! Usa la práctica mixta para no olvidar nada.';
-  }
-  // El texto incluye títulos de la base de datos: se inserta como texto, no como HTML
-  rutaSumiMensaje.textContent = texto;
-  rutaSumiAvatar.innerHTML = sumiHTML(animo);
-  if (sig.id_nodo) {
-    destinoRutaSumi = infoDeNodo(sig.id_nodo);
-    rutaSumiIr.textContent = boton;
-    rutaSumiIr.hidden = false;
-  } else {
-    rutaSumiIr.hidden = true;
-  }
-}
-rutaSumiIr.addEventListener('click', () => { if (destinoRutaSumi) irALeccion(destinoRutaSumi.clave, destinoRutaSumi.indice); });
-rutaSumiAvatar.innerHTML = sumiHTML('feliz');
 
 // ---------- Mapa de aprendizaje: camino sinuoso (vista general) ----------
 const mapaContenedor = document.getElementById('mapa-contenedor');
@@ -2009,6 +1954,11 @@ function actualizarPracticaMixta() {
   mixtaEstado.textContent = bloqueada
     ? 'Completa tu primera lección para desbloquearla.'
     : `Lecciones incluidas: ${hechas} de ${totalLecciones}. Cada práctica mezcla hasta 10 ejercicios.`;
+  const etiqueta = bloqueada
+    ? 'Práctica mixta bloqueada. Completa tu primera lección para desbloquearla.'
+    : `Práctica mixta: ${hechas} de ${totalLecciones} lecciones incluidas. Cada práctica mezcla hasta 10 ejercicios.`;
+  btnPracticaMixta.setAttribute('aria-label', etiqueta);
+  btnPracticaMixta.title = etiqueta;
 }
 
 function abrirPracticaMixta() {
@@ -2739,7 +2689,6 @@ function cerrarLeccion(confirmar = true) {
   document.body.classList.remove('leccion-abierta');
   if (cursoActual) renderizarListaLecciones();
   actualizarPracticaMixta();
-  actualizarRutaSumi();
 }
 
 document.getElementById('leccion-cerrar').addEventListener('click', () => cerrarLeccion(true));
